@@ -22,8 +22,8 @@ const VillagePage = () => {
             <h1>Village</h1>
             <div className="villagers-list">
                 <h2>Villagers</h2>
-                {villagers.map((v) => (
-                    <VillageInfo villager={v} />
+                {villagers.map((v, index) => (
+                    <VillageInfo key={v.id ?? index} villager={v} />
                 ))}
             </div>
         </div>

@@ -18,7 +18,7 @@ const MiningPage = () => {
             <h1>Mine resources</h1>
             <div className="tasks">
                 {taskHandlers.map(({ name, icon }) => (
-                    <div>
+                    <div key={name}>
                         <h2>{icon} {name}</h2>
                         <TaskDropdown taskType={TASK_TYPE} taskName={name} />
                     </div>
