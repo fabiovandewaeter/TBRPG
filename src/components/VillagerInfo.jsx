@@ -5,8 +5,6 @@ const TASK_TYPES = ["mining", "fishing"];
 
 const VillageInfo = ({ villager }) => {
 
-    console.log("TEST", villager, villager.xp);
-
     return (
         <div className="villager-info">
             <h3>{villager.name}</h3>

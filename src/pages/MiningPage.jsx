@@ -13,30 +13,6 @@ const MiningPage = () => {
     const taskHandlers = getTaskHandler(mine, gainXp);
     const timersRef = useRef([]);
 
-    useEffect(() => {
-        timersRef.current.forEach(clearInterval);
-        timersRef.current = [];
-
-        // Pour chaque villageois assigné, on instancie un interval
-        villagers.forEach(v => {
-            if (v.currentTask) {
-                // On retrouve le handler correspondant à son nom de tâche
-                const handler = taskHandlers.find(h => h.name === v.currentTask);
-                if (handler) {
-                    const timerId = setInterval(() => {
-                        handler.onTick(v.id);
-                    }, handler.interval);
-                    timersRef.current.push(timerId);
-                }
-            }
-        });
-        // Cleanup : on supprime tous les timers quand villagers change ou à la destruction
-        return () => {
-            timersRef.current.forEach(clearInterval);
-            timersRef.current = [];
-        };
-    }, [villagers, taskHandlers]);
-
     return (
         <div>
             <h1>Mine resources</h1>

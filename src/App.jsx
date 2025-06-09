@@ -5,34 +5,37 @@ import CombatPage from './pages/CombatPage';
 import MiningPage from './pages/MiningPage';
 import StatsPage from './pages/StatsPage';
 import { VillagerProvider } from './context/VillagerContext';
+import { TaskManagerProvider } from './context/TaskManagerContext';
 
 export default function App() {
   return (
     <ResourceProvider>
       <VillagerProvider>
-        <BrowserRouter basename="/TBRPG">
-          <div className="app-layout">
-            <nav className="sidebar">
-              <ul>
-                <li><Link to="/village" className="nav-link">🏠 Village</Link></li>
-                <li><Link to="/combat" className="nav-link">⚔️ Combat</Link></li>
-                <li><Link to="/mine" className="nav-link">⛏️ Miner</Link></li>
-                <li><Link to="/stats" className="nav-link">📊 Stats</Link></li>
-              </ul>
-            </nav>
+        <TaskManagerProvider>
+          <BrowserRouter basename="/TBRPG">
+            <div className="app-layout">
+              <nav className="sidebar">
+                <ul>
+                  <li><Link to="/village" className="nav-link">🏠 Village</Link></li>
+                  <li><Link to="/combat" className="nav-link">⚔️ Combat</Link></li>
+                  <li><Link to="/mine" className="nav-link">⛏️ Miner</Link></li>
+                  <li><Link to="/stats" className="nav-link">📊 Stats</Link></li>
+                </ul>
+              </nav>
 
-            <div className="main-content">
-              <Routes>
-                <Route path="/" element={<Navigate to="/village" replace />} />
+              <div className="main-content">
+                <Routes>
+                  <Route path="/" element={<Navigate to="/village" replace />} />
 
-                <Route path="/village" element={<VillagePage />} />
-                <Route path="/combat" element={<CombatPage />} />
-                <Route path="/mine" element={<MiningPage />} />
-                <Route path="/stats" element={<StatsPage />} />
-              </Routes>
+                  <Route path="/village" element={<VillagePage />} />
+                  <Route path="/combat" element={<CombatPage />} />
+                  <Route path="/mine" element={<MiningPage />} />
+                  <Route path="/stats" element={<StatsPage />} />
+                </Routes>
+              </div>
             </div>
-          </div>
-        </BrowserRouter>
+          </BrowserRouter>
+        </TaskManagerProvider>
       </VillagerProvider>
     </ResourceProvider >
   );
