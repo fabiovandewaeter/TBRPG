@@ -1,4 +1,4 @@
-export const getTaskHandler = (mineFunction, gainXpFunction) => {
+export const getTaskHandler = (collectFunction, gainXpFunction) => {
     return [
         {
             name: "Stone",
@@ -6,7 +6,7 @@ export const getTaskHandler = (mineFunction, gainXpFunction) => {
             interval: 1000,
             onTick: (villagerId) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;
-                mineFunction('stone', resourceGain);
+                collectFunction('stone', resourceGain);
                 gainXpFunction(villagerId, 'mining', 1);
             }
         },
@@ -16,7 +16,7 @@ export const getTaskHandler = (mineFunction, gainXpFunction) => {
             interval: 3000,
             onTick: (villagerId) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;
-                mineFunction('iron', resourceGain);
+                collectFunction('iron', resourceGain);
                 gainXpFunction(villagerId, 'mining', 1);
             }
         },

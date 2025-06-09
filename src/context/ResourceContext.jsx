@@ -6,7 +6,7 @@ export const ResourceProvider = ({ children }) => {
     const [resources, setResources] = useState({ stone: 0, gold: 0 });
 
     // function to collect a resource
-    const mine = (type, amount) => {
+    const collect = (type, amount) => {
         setResources(prev => ({
             ...prev,
             [type]: (prev[type] || 0) + amount,
@@ -14,7 +14,7 @@ export const ResourceProvider = ({ children }) => {
     }
 
     return (
-        <ResourceContext.Provider value={{ resources, mine }}>
+        <ResourceContext.Provider value={{ resources, collect }}>
             {children}
         </ResourceContext.Provider>
     );

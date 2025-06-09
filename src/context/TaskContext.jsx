@@ -6,11 +6,11 @@ import { useVillagers } from './VillagerContext';
 const TaskContext = createContext();
 
 export const TaskProvider = ({ children }) => {
-    const { mine } = useResources();
+    const { collect } = useResources();
     const { gainXp } = useVillagers();
     const [tasks, setTasks] = useState({});
 
-    const taskHandlers = getTaskHandler(mine, gainXp);
+    const taskHandlers = getTaskHandler(collect, gainXp);
 
     const startTask = (taskType, villagerId) => {
         const taskConfig = taskHandlers[taskType];

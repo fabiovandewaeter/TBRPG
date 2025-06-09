@@ -7,11 +7,10 @@ import TaskDropdown from '../components/TaskDropdown';
 const TASK_TYPE = "mining";
 
 const MiningPage = () => {
-    const { mine } = useContext(ResourceContext);
-    const { villagers, gainXp } = useContext(VillagerContext);
+    const { collect } = useContext(ResourceContext);
+    const { gainXp } = useContext(VillagerContext);
 
-    const taskHandlers = getTaskHandler(mine, gainXp);
-    const timersRef = useRef([]);
+    const taskHandlers = getTaskHandler(collect, gainXp);
 
     return (
         <div>

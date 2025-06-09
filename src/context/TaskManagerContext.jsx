@@ -7,11 +7,11 @@ import { getTaskHandler } from '../data/mining/miningTasks';
 export const TaskManagerContext = createContext();
 
 export const TaskManagerProvider = ({ children }) => {
-    const { mine } = useContext(ResourceContext);
+    const { collect } = useContext(ResourceContext);
     const { villagers, gainXp } = useContext(VillagerContext);
 
     const timersRef = useRef([]);
-    const taskHandlers = getTaskHandler(mine, gainXp);
+    const taskHandlers = getTaskHandler(collect, gainXp);
 
     useEffect(() => {
         // Clear old timers
@@ -34,7 +34,7 @@ export const TaskManagerProvider = ({ children }) => {
             timersRef.current.forEach(clearInterval);
             timersRef.current = [];
         };
-    }, [villagers, mine, gainXp]);
+    }, [villagers, collect, gainXp]);
 
     return (
         <TaskManagerContext.Provider value={{}}>
