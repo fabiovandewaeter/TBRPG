@@ -29,7 +29,7 @@ export const VillagerProvider = ({ children }) => {
         );
     }, []);
 
-    const gainXp = (villagerId, taskType, amount) => {
+    const gainXp = useCallback((villagerId, taskType, amount) => {
         setVillagers(prev =>
             prev.map(v => {
                 if (v.id === villagerId) {
@@ -45,7 +45,7 @@ export const VillagerProvider = ({ children }) => {
                 return v;
             })
         );
-    };
+    }, []);
 
     return (
         <VillagerContext.Provider

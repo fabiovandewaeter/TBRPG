@@ -16,6 +16,7 @@ const StatsPage = () => {
             <h1>Resources</h1>
             <ul>
                 <li>Stone: {resources.stone}</li>
+                <li>Iron: {resources.iron}</li>
                 <li>Gold: {resources.gold}</li>
             </ul>
         </div>
