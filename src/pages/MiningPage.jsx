@@ -1,20 +1,51 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { ResourceContext } from '../context/ResourceContext';
+import { VillagerContext } from '../context/VillagerContext';
+import { getTaskHandler } from '../data/mining/miningTasks';
+import TaskDropdown from '../components/TaskDropdown';
 
 const MiningPage = () => {
-    const context = useContext(ResourceContext);
+    const { mine } = useContext(ResourceContext);
+    const { villagers, gainXp } = useContext(VillagerContext);
 
-    if (!context) {
-        return <div>Loading...</div>;
-    }
+    const taskHandlers = getTaskHandler(mine, gainXp);
+    const timersRef = useRef([]);
 
-    const { mine } = context;
+    useEffect(() => {
+        timersRef.current.forEach(clearInterval);
+        timersRef.current = [];
+
+        // Pour chaque villageois assigné, on instancie un interval
+        villagers.forEach(v => {
+            if (v.currentTask) {
+                // On retrouve le handler correspondant à son nom de tâche
+                const handler = taskHandlers.find(h => h.name === v.currentTask);
+                if (handler) {
+                    const timerId = setInterval(() => {
+                        handler.onTick(v.id);
+                    }, handler.interval);
+                    timersRef.current.push(timerId);
+                }
+            }
+        });
+        // Cleanup : on supprime tous les timers quand villagers change ou à la destruction
+        return () => {
+            timersRef.current.forEach(clearInterval);
+            timersRef.current = [];
+        };
+    }, [villagers, taskHandlers]);
 
     return (
         <div>
             <h1>Mine resources</h1>
-            <button onClick={() => mine('stone', 3)}>⛏️ Mine Stone (+3)</button>
-            <button onClick={() => mine('gold', 1)}>⛏️ Mine Gold (+1)</button>
+            <div className="tasks">
+                {taskHandlers.map(({ name, icon }) => (
+                    <div>
+                        <h2>{icon} {name}</h2>
+                        <TaskDropdown taskType={name} />
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
