@@ -3,7 +3,7 @@ import React, { createContext, useCallback, useState } from 'react';
 export const ResourceContext = createContext();
 
 export const ResourceProvider = ({ children }) => {
-    const [resources, setResources] = useState({ stone: 0, gold: 0 });
+    const [resources, setResources] = useState({});
 
     // function to collect a resource
     const collect = useCallback((type, amount) => {

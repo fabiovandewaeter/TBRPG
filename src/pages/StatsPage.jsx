@@ -15,9 +15,9 @@ const StatsPage = () => {
         <div>
             <h1>Resources</h1>
             <ul>
-                <li>Stone: {resources.stone}</li>
-                <li>Iron: {resources.iron}</li>
-                <li>Gold: {resources.gold}</li>
+                {Object.entries(resources).map((resource) => (
+                    <li>{resource[0]}: {resource[1]}</li>
+                ))}
             </ul>
         </div>
     );
