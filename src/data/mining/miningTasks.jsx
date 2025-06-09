@@ -1,4 +1,4 @@
-export const getTaskHandler = (collectFunction, gainXpFunction) => {
+export const getMiningTaskHandlers = (collectFunction, gainXpFunction) => {
     return [
         {
             name: "Stone",

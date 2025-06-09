@@ -1,6 +1,5 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { VillagerContext } from '../context/VillagerContext';
-import XpBar from '../components/XpBar';
 import VillageInfo from '../components/VillagerInfo';
 
 const VillagePage = () => {

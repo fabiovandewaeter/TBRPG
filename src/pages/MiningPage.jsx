@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { ResourceContext } from '../context/ResourceContext';
 import { VillagerContext } from '../context/VillagerContext';
-import { getTaskHandler } from '../data/mining/miningTasks';
+import { getMiningTaskHandlers } from '../data/mining/miningTasks';
 import TaskDropdown from '../components/TaskDropdown';
 
 const TASK_TYPE = "mining";
@@ -10,7 +10,7 @@ const MiningPage = () => {
     const { collect } = useContext(ResourceContext);
     const { gainXp } = useContext(VillagerContext);
 
-    const taskHandlers = getTaskHandler(collect, gainXp);
+    const taskHandlers = getMiningTaskHandlers(collect, gainXp);
 
     return (
         <div>

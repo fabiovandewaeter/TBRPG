@@ -1,22 +1,28 @@
-import { useContext, useState } from 'react';
-import VillagerList from '../components/TaskDropdown';
+import { useContext } from 'react';
 import { VillagerContext } from '../context/VillagerContext';
+import { ResourceContext } from '../context/ResourceContext';
+import { getCombatTaskHandlers } from '../data/combat/combatTasks';
+import TaskDropdown from '../components/TaskDropdown';
+
+const TASK_TYPE = "combat";
 
 const CombatPage = () => {
-    const context = useContext(VillagerContext);
+    const { collect } = useContext(ResourceContext);
+    const { gainXp } = useContext(VillagerContext);
 
-    if (!context) {
-        return <div>Loading...</div>;
-    }
-
-    const { villagers, addVillager } = context;
+    const taskHandlers = getCombatTaskHandlers(collect, gainXp);
 
     return (
         <div>
-            <h1>Combat</h1>
-            <VillagerList villagers={villagers}>
-
-            </VillagerList>
+            <h1>Combat tasks</h1>
+            <div className="tasks">
+                {taskHandlers.map(({ name, icon }) => (
+                    <div key={name}>
+                        <h2>{icon} {name}</h2>
+                        <TaskDropdown taskType={TASK_TYPE} taskName={name} />
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

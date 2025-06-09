@@ -1,7 +1,7 @@
 import React from 'react';
 import XpBar from './XpBar';
 
-const TASK_TYPES = ["mining", "fishing"];
+const TASK_TYPES = ["mining", "combat"];
 
 const VillageInfo = ({ villager }) => {
 
