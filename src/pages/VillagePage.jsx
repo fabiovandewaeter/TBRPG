@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import VillagerList from '../components/TaskDropdown';
 import { VillagerContext } from '../context/VillagerContext';
-import TaskDropdown from '../components/TaskDropdown';
+import XpBar from '../components/XpBar';
+import VillageInfo from '../components/VillagerInfo';
 
 const VillagePage = () => {
     const { villagers, addVillager } = useContext(VillagerContext);
@@ -20,9 +20,11 @@ const VillagePage = () => {
     return (
         <div>
             <h1>Village</h1>
-            <div className="tasks-container">
-                <TaskDropdown taskType="gathering" label="Gathering" />
-                <TaskDropdown taskType="building" label="Building" />
+            <div className="villagers-list">
+                <h2>Villagers</h2>
+                {villagers.map((v) => (
+                    <VillageInfo villager={v} />
+                ))}
             </div>
         </div>
     );

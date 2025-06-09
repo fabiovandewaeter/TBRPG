@@ -7,15 +7,15 @@ import { VillagerContext } from '../context/VillagerContext';
  * - Shows currently assigned villager or placeholder.
  * - Lists only villagers available or already assigned to this task.
  */
-const TaskDropdown = ({ taskType, label }) => {
+const TaskDropdown = ({ taskType, taskName }) => {
     const { villagers, assignTask, unassignTask } = useContext(VillagerContext);
 
     // Find the villager currently assigned to this task (if any)
-    const selectedVillager = villagers.find(v => v.currentTask === taskType);
+    const selectedVillager = villagers.find(v => v.currentTask === taskName);
 
     // Build list: all villagers not on any task, plus currently selected
     const options = villagers
-        .filter(v => !v.currentTask || v.currentTask === taskType)
+        .filter(v => !v.currentTask || v.currentTask === taskName)
         .map(v => ({ id: v.id, name: v.name }));
 
     const handleChange = e => {
@@ -27,13 +27,13 @@ const TaskDropdown = ({ taskType, label }) => {
         }
         // Assign new if any selected
         if (newId) {
-            assignTask(newId, taskType);
+            assignTask(newId, taskName);
         }
     };
 
     return (
         <div className="task-dropdown">
-            <label>{label}</label>
+            <label>{taskName}</label>
             <select value={selectedVillager ? selectedVillager.id : ''} onChange={handleChange}>
                 <option value="">-- Aucun --</option>
                 {options.map(opt => (

@@ -13,10 +13,10 @@ export const VillagerProvider = ({ children }) => {
         ]);
     }, []);
 
-    const assignTask = useCallback((villagerId, taskType) => {
+    const assignTask = useCallback((villagerId, taskName) => {
         setVillagers(prev =>
             prev.map(v =>
-                v.id === villagerId ? { ...v, currentTask: taskType } : v
+                v.id === villagerId ? { ...v, currentTask: taskName } : v
             )
         );
     }, []);

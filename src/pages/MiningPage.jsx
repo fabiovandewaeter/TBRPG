@@ -4,6 +4,8 @@ import { VillagerContext } from '../context/VillagerContext';
 import { getTaskHandler } from '../data/mining/miningTasks';
 import TaskDropdown from '../components/TaskDropdown';
 
+const TASK_TYPE = "mining";
+
 const MiningPage = () => {
     const { mine } = useContext(ResourceContext);
     const { villagers, gainXp } = useContext(VillagerContext);
@@ -42,7 +44,7 @@ const MiningPage = () => {
                 {taskHandlers.map(({ name, icon }) => (
                     <div>
                         <h2>{icon} {name}</h2>
-                        <TaskDropdown taskType={name} />
+                        <TaskDropdown taskType={TASK_TYPE} taskName={name} />
                     </div>
                 ))}
             </div>
