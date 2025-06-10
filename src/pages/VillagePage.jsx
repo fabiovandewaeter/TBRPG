@@ -2,12 +2,14 @@ import { useContext, useEffect, useRef } from 'react';
 import { VillagerContext } from '../context/VillagerContext';
 import VillageInfo from '../components/VillagerInfo';
 import Timer from '../components/Timer';
+import { ResourceContext } from '../context/ResourceContext';
 
 const VillagePage = () => {
     const { villagers, addVillager } = useContext(VillagerContext);
-    const hasInitialized = useRef(false);
+    const { resources } = useContext(ResourceContext);
 
     // Ensure at least one villager exists on first mount only
+    const hasInitialized = useRef(false);
     useEffect(() => {
         if (!hasInitialized.current) {
             if (villagers.length === 0) {

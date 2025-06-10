@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react';
 import { ResourceContext } from './ResourceContext';
 import { VillagerContext } from './VillagerContext';
-import { getCombatTaskHandlers } from '../data/tasks/combat/combatTasks';
-import { getMiningTaskHandlers } from '../data/tasks/mining/miningTasks';
-import { getFarmingTaskHandlers } from '../data/tasks/farming/farmingTasks';
+import { getCombatTaskHandlers } from '../data/tasks/combatTasks';
+import { getMiningTaskHandlers } from '../data/tasks/miningTasks';
+import { getFarmingTaskHandlers } from '../data/tasks/farmingTasks';
 
 export const TaskManagerContext = createContext();
 
