@@ -1,26 +1,28 @@
+import { monsters } from "../monsters";
+
 const TASK_TYPE = "combat";
 const ICON = "⚔️";
 
-export const getCombatTaskHandlers = (collectFunction, gainXpFunction) => {
+export const getCombatTaskHandlers = (collectFunction, gainXpFunction, getLevelFunction) => {
     return [
         {
-            name: "Slime",
-            icon: ICON,
-            interval: 1000,
-            onTick: (villagerId) => {
+            name: "slime",
+            monster: monsters["slime"],
+            baseInterval: 1000,
+            onTick: (villager) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;
-                collectFunction('slime', resourceGain);
-                gainXpFunction(villagerId, TASK_TYPE, 1);
+                collectFunction("slime", resourceGain);
+                gainXpFunction(villager.id, TASK_TYPE, 1);
             }
         },
         {
-            name: "Wolf",
-            icon: ICON,
-            interval: 3000,
-            onTick: (villagerId) => {
+            name: "wolf",
+            monster: monsters["wolf"],
+            baseInterval: 3000,
+            onTick: (villager) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;
-                collectFunction('wolf', resourceGain);
-                gainXpFunction(villagerId, TASK_TYPE, 1);
+                collectFunction("wolf", resourceGain);
+                gainXpFunction(villager.id, TASK_TYPE, 1);
             }
         },
     ];

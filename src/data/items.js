@@ -1,4 +1,3 @@
-// src/data/items.js
 export const items = {
     salad: {
         displayName: "Salad",

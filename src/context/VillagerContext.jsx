@@ -48,6 +48,10 @@ export const VillagerProvider = ({ children, initialState }) => {
         );
     }, []);
 
+    const getLevel = useCallback((xp) => {
+        return Math.floor(xp / 100) + 1;
+    }, []);
+
     const killVillager = useCallback((villagerId) => {
         // find the villager to kill
         const victim = villagers.find(v => v.id === villagerId);
@@ -56,7 +60,6 @@ export const VillagerProvider = ({ children, initialState }) => {
         setVillagers(prev => prev.filter(v => v.id !== villagerId));
         // add to deadVillagers
         setDeadVillagers(prev => [...prev, victim]);
-
     }, [villagers, setVillagers, setDeadVillagers]);
 
     return (
@@ -67,6 +70,7 @@ export const VillagerProvider = ({ children, initialState }) => {
                 assignTask,
                 unassignTask,
                 gainXp,
+                getLevel,
                 killVillager
             }}
         >

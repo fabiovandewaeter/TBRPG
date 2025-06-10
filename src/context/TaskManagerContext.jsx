@@ -9,46 +9,66 @@ export const TaskManagerContext = createContext();
 
 export const TaskManagerProvider = ({ children }) => {
     const { collect } = useContext(ResourceContext);
-    const { villagers, gainXp } = useContext(VillagerContext);
+    const { villagers, gainXp, getLevel } = useContext(VillagerContext);
 
     const timersRef = useRef({});
     const taskHandlers = useMemo(() => [
-        ...getCombatTaskHandlers(collect, gainXp),
-        ...getMiningTaskHandlers(collect, gainXp),
-        ...getFarmingTaskHandlers(collect, gainXp)
-    ], [collect, gainXp]);
+        ...getCombatTaskHandlers(collect, gainXp, getLevel),
+        ...getMiningTaskHandlers(collect, gainXp, getLevel),
+        ...getFarmingTaskHandlers(collect, gainXp, getLevel)
+    ], [collect, gainXp, getLevel]);
 
     useEffect(() => {
         villagers.forEach(v => {
-            const current = timersRef.current[v.id];
+            const currentTimer = timersRef.current[v.id];
             const taskName = v.currentTask;
+            const handler = taskHandlers.find(h => h.name === taskName);
 
-            // Si la tâche a disparu ou changé, on clear l'ancien timer
-            if (current && current.taskName !== taskName) {
-                clearInterval(current.timerId);
+            // Calculer le niveau actuel pour cette tâche
+            const xpForTask = v.xp?.[handler?.taskType] || 0;
+            const currentLevel = getLevel(xpForTask);
+
+            // Vérifier si on doit mettre à jour le timer
+            const shouldUpdateTimer =
+                currentTimer &&
+                (currentTimer.taskName !== taskName ||
+                    currentTimer.level !== currentLevel);
+
+            // Arrêter le timer existant si nécessaire
+            if (shouldUpdateTimer || !taskName) {
+                clearInterval(currentTimer?.timerId);
                 delete timersRef.current[v.id];
             }
 
-            // Si pas encore de timer pour ce villageois et qu'il a une tâche
-            if (!timersRef.current[v.id] && taskName) {
-                const handler = taskHandlers.find(h => h.name === taskName);
-                if (handler) {
-                    const timerId = setInterval(() => handler.onTick(v.id), handler.interval);
-                    timersRef.current[v.id] = { timerId, taskName };
-                }
+            // Créer un nouveau timer si le villageois a une tâche
+            if (taskName && handler && (!timersRef.current[v.id] || shouldUpdateTimer)) {
+                // Calculer l'intervalle en fonction du niveau
+                const levelFactor = 1 - (currentLevel * 0.05); // 5% plus rapide par niveau
+                const effectiveInterval = Math.max(
+                    100, // intervalle minimum
+                    handler.baseInterval * levelFactor
+                );
+
+                const timerId = setInterval(() => handler.onTick(v), effectiveInterval);
+
+                // Stocker les infos du timer avec le niveau actuel
+                timersRef.current[v.id] = {
+                    timerId,
+                    taskName,
+                    level: currentLevel,
+                    effectiveInterval
+                };
             }
         });
 
-        // Nettoyage quand un villageois est supprimé
+        // Nettoyer les timers des villageois supprimés
         Object.keys(timersRef.current).forEach(id => {
             if (!villagers.find(v => v.id === id)) {
                 clearInterval(timersRef.current[id].timerId);
                 delete timersRef.current[id];
             }
         });
-
-        // On ne dépend plus de collect/gainXp directement ici
-    }, [villagers, taskHandlers]);
+    }, [villagers, taskHandlers, getLevel]);
 
     return (
         <TaskManagerContext.Provider value={{}}>
