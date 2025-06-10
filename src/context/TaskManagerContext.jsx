@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { ResourceContext } from './ResourceContext';
 import { VillagerContext } from './VillagerContext';
-import { getCombatTaskHandlers } from '../data/combat/combatTasks';
-import { getMiningTaskHandlers } from '../data/mining/miningTasks';
+import { getCombatTaskHandlers } from '../data/tasks/combat/combatTasks';
+import { getMiningTaskHandlers } from '../data/tasks/mining/miningTasks';
+import { getFarmingTaskHandlers } from '../data/tasks/farming/farmingTasks';
 
 export const TaskManagerContext = createContext();
 
@@ -11,10 +12,10 @@ export const TaskManagerProvider = ({ children }) => {
     const { villagers, gainXp } = useContext(VillagerContext);
 
     const timersRef = useRef({});
-    //const taskHandlers = getTaskHandler(collect, gainXp);
     const taskHandlers = [
+        ...getCombatTaskHandlers(collect, gainXp),
         ...getMiningTaskHandlers(collect, gainXp),
-        ...getCombatTaskHandlers(collect, gainXp)
+        ...getFarmingTaskHandlers(collect, gainXp)
     ];
 
     useEffect(() => {
@@ -48,7 +49,6 @@ export const TaskManagerProvider = ({ children }) => {
 
         // On ne dépend plus de collect/gainXp directement ici
     }, [villagers, taskHandlers]);
-
 
     return (
         <TaskManagerContext.Provider value={{}}>

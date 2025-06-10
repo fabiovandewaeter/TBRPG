@@ -1,7 +1,6 @@
 import React from 'react';
 import XpBar from './XpBar';
-
-const TASK_TYPES = ["mining", "combat"];
+import { TASK_TYPES } from '../data/tasks/taskTypeLists';
 
 const VillageInfo = ({ villager }) => {
 

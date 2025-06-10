@@ -1,7 +1,7 @@
 import { useContext } from 'react';
-import { VillagerContext } from '../context/VillagerContext';
 import { ResourceContext } from '../context/ResourceContext';
-import { getCombatTaskHandlers } from '../data/combat/combatTasks';
+import { VillagerContext } from '../context/VillagerContext';
+import { getCombatTaskHandlers } from '../data/tasks/combat/combatTasks';
 import TaskDropdown from '../components/TaskDropdown';
 
 const TASK_TYPE = "combat";

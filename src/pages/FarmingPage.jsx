@@ -1,20 +1,20 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { ResourceContext } from '../context/ResourceContext';
 import { VillagerContext } from '../context/VillagerContext';
-import { getMiningTaskHandlers } from '../data/tasks/mining/miningTasks';
+import { getFarmingTaskHandlers } from '../data/tasks/farming/farmingTasks';
 import TaskDropdown from '../components/TaskDropdown';
 
-const TASK_TYPE = "mining";
+const TASK_TYPE = "farming";
 
-const MiningPage = () => {
+const FarmingPage = () => {
     const { collect } = useContext(ResourceContext);
     const { gainXp } = useContext(VillagerContext);
 
-    const taskHandlers = getMiningTaskHandlers(collect, gainXp);
+    const taskHandlers = getFarmingTaskHandlers(collect, gainXp);
 
     return (
         <div>
-            <h1>Mining tasks</h1>
+            <h1>Farming tasks</h1>
             <div className="tasks">
                 {taskHandlers.map(({ name, icon }) => (
                     <div key={name}>
@@ -27,4 +27,4 @@ const MiningPage = () => {
     );
 }
 
-export default MiningPage;
+export default FarmingPage;

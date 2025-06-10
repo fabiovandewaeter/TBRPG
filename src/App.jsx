@@ -3,6 +3,7 @@ import { ResourceProvider } from './context/ResourceContext';
 import VillagePage from './pages/VillagePage';
 import CombatPage from './pages/CombatPage';
 import MiningPage from './pages/MiningPage';
+import FarmingPage from './pages/FarmingPage';
 import StatsPage from './pages/StatsPage';
 import { VillagerProvider } from './context/VillagerContext';
 import { TaskManagerProvider } from './context/TaskManagerContext';
@@ -19,6 +20,7 @@ export default function App() {
                   <li><Link to="/village" className="nav-link">🏠 Village</Link></li>
                   <li><Link to="/combat" className="nav-link">⚔️ Combat</Link></li>
                   <li><Link to="/mine" className="nav-link">⛏️ Miner</Link></li>
+                  <li><Link to="/farming" className="nav-link">🌱️ Farming</Link></li>
                   <li><Link to="/stats" className="nav-link">📊 Stats</Link></li>
                 </ul>
               </nav>
@@ -30,6 +32,7 @@ export default function App() {
                   <Route path="/village" element={<VillagePage />} />
                   <Route path="/combat" element={<CombatPage />} />
                   <Route path="/mine" element={<MiningPage />} />
+                  <Route path="/farming" element={<FarmingPage />} />
                   <Route path="/stats" element={<StatsPage />} />
                 </Routes>
               </div>
