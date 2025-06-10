@@ -8,14 +8,45 @@ import StatsPage from './pages/StatsPage';
 import { VillagerProvider } from './context/VillagerContext';
 import { TaskManagerProvider } from './context/TaskManagerContext';
 import { VillageManagerProvider } from './context/VillageManagerContext';
+import { SaveProvider, useSave } from './context/SaveContext';
+import { useContext, useEffect } from 'react'; // Ajout de useContext
+import { ResourceContext } from './context/ResourceContext';
+import { VillagerContext } from './context/VillagerContext';
+import { VillageManagerContext } from './context/VillageManagerContext';
 
-export default function App() {
+function SaveManager() {
+  const { saveGame } = useSave();
+  const { resources } = useContext(ResourceContext);
+  const { villagers, deadVillagers } = useContext(VillagerContext);
+  const { timeLeft } = useContext(VillageManagerContext);
+
+  useEffect(() => {
+    const saveData = {
+      resources,
+      villagers,
+      deadVillagers,
+      villageManager: { timeLeft }
+    };
+    saveGame(saveData);
+  }, [resources, villagers, deadVillagers, timeLeft]);
+
+  return null;
+}
+
+function AppContent() {
+  const { loadSave } = useSave();
+  const saveData = loadSave();
+
   return (
-    <ResourceProvider>
-      <VillagerProvider>
-        <VillageManagerProvider>
+    <ResourceProvider initialState={saveData?.resources}>
+      <VillagerProvider initialState={{
+        villagers: saveData?.villagers,
+        deadVillagers: saveData?.deadVillagers
+      }}>
+        <VillageManagerProvider initialState={saveData?.villageManager}>
           <TaskManagerProvider>
             <BrowserRouter basename="/TBRPG">
+              <SaveManager />
               <div className="app-layout">
                 <nav className="sidebar">
                   <ul>
@@ -24,13 +55,23 @@ export default function App() {
                     <li><Link to="/mine" className="nav-link">⛏️ Miner</Link></li>
                     <li><Link to="/farming" className="nav-link">🌱️ Farming</Link></li>
                     <li><Link to="/stats" className="nav-link">📊 Stats</Link></li>
+                    <li>
+                      <button
+                        onClick={() => {
+                          localStorage.removeItem("game_save");
+                          window.location.reload();
+                        }}
+                        className="nav-link"
+                      >
+                        🔄 Reset
+                      </button>
+                    </li>
                   </ul>
                 </nav>
 
                 <div className="main-content">
                   <Routes>
                     <Route path="/" element={<Navigate to="/village" replace />} />
-
                     <Route path="/village" element={<VillagePage />} />
                     <Route path="/combat" element={<CombatPage />} />
                     <Route path="/mine" element={<MiningPage />} />
@@ -44,5 +85,13 @@ export default function App() {
         </VillageManagerProvider>
       </VillagerProvider>
     </ResourceProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <SaveProvider >
+      <AppContent />
+    </SaveProvider >
   );
 }

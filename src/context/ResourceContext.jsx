@@ -3,8 +3,8 @@ import { items } from '../data/items';
 
 export const ResourceContext = createContext();
 
-export const ResourceProvider = ({ children }) => {
-    const [resources, setResources] = useState({});
+export const ResourceProvider = ({ children, initialState }) => {
+    const [resources, setResources] = useState(initialState || {});
 
     // function to collect a resource
     const collect = useCallback((type, amount) => {

@@ -2,9 +2,9 @@ import React, { createContext, useCallback, useState } from 'react';
 
 export const VillagerContext = createContext();
 
-export const VillagerProvider = ({ children }) => {
-    const [villagers, setVillagers] = useState([]);
-    const [deadVillagers, setDeadVillagers] = useState([]);
+export const VillagerProvider = ({ children, initialState }) => {
+    const [villagers, setVillagers] = useState(initialState?.villagers || []);
+    const [deadVillagers, setDeadVillagers] = useState(initialState?.deadVillagers || []);
 
     // Add a new villager with unique id
     const addVillager = useCallback(() => {

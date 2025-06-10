@@ -13,10 +13,10 @@ export const VillageManagerContext = createContext();
  *   - On trie les villagers vivants par niveau total XP croissant,
  *   - On "tue" le premier (killVillager).
  */
-export const VillageManagerProvider = ({ children }) => {
+export const VillageManagerProvider = ({ children, initialState }) => {
     const { resources, getByCategory, consume } = useContext(ResourceContext);
     const { villagers, killVillager } = useContext(VillagerContext);
-    const [timeLeft, setTimeLeft] = useState(FOOD_CONSUMPTION_INTERVAL);
+    const [timeLeft, setTimeLeft] = useState(initialState?.timeLeft || FOOD_CONSUMPTION_INTERVAL);
 
     // timer
     useEffect(() => {
