@@ -49,15 +49,15 @@ export const VillagerProvider = ({ children }) => {
     }, []);
 
     const killVillager = useCallback((villagerId) => {
-        setDeadVillagers(prev => {
-            const victim = prev.find(v => v.id === villagerId);
-            if (victim) {
-                setDeadVillagers(dv => [...dv, victim]);
-                return prev.filter(v => v.id !== villagerId);
-            }
-            return prev;
-        });
-    }, []);
+        // find the villager to kill
+        const victim = villagers.find(v => v.id === villagerId);
+        if (!victim) return; // pas trouvé => on ne fait rien
+        // remove from villagers
+        setVillagers(prev => prev.filter(v => v.id !== villagerId));
+        // add to deadVillagers
+        setDeadVillagers(prev => [...prev, victim]);
+
+    }, [villagers, setVillagers, setDeadVillagers]);
 
     return (
         <VillagerContext.Provider
@@ -73,13 +73,4 @@ export const VillagerProvider = ({ children }) => {
             {children}
         </VillagerContext.Provider>
     );
-};
-
-// Export du hook personnalisé
-export const useVillagers = () => {
-    const context = React.useContext(VillagerContext);
-    if (!context) {
-        throw new Error('useVillagers must be used within a VillagerProvider');
-    }
-    return context;
 };

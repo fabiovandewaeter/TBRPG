@@ -1,9 +1,9 @@
 // VillageManagerContext.js
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ResourceContext } from './ResourceContext';
-import { useVillagers } from './VillagerContext';
+import { VillagerContext } from './VillagerContext';
 
-const FOOD_CONSUMPTION_INTERVAL = 1 * 60; // 10 minutes in secondes
+const FOOD_CONSUMPTION_INTERVAL = 0.1 * 60; // 10 minutes in secondes
 
 export const VillageManagerContext = createContext();
 
@@ -15,7 +15,7 @@ export const VillageManagerContext = createContext();
  */
 export const VillageManagerProvider = ({ children }) => {
     const { resources } = useContext(ResourceContext);
-    const { villagers, killVillager } = useVillagers();
+    const { villagers, killVillager } = useContext(VillagerContext);
 
     const [timeLeft, setTimeLeft] = useState(FOOD_CONSUMPTION_INTERVAL);
 
@@ -41,10 +41,9 @@ export const VillageManagerProvider = ({ children }) => {
                 withLevel.sort((a, b) => a.totalXp - b.totalXp);
                 const toKill = withLevel[0];
                 killVillager(toKill.id);
-                console.log(`VillageManager : ${toKill.name} est mort (XP=${toKill.totalXp})`);
             }
 
-            setTimeLeft(FOOD_CONSUMPTION_INTERVAL); // Réinitialiser le timer
+            setTimeLeft(FOOD_CONSUMPTION_INTERVAL); // clear timer
         }
     }, [timeLeft, resources.food, villagers, killVillager]);
 
