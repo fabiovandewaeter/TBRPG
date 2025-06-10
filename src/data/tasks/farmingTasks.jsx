@@ -1,11 +1,13 @@
+import { items } from "../items";
+
 const TASK_TYPE = "farming";
 const ICON = "🌱";
 
 export const getFarmingTaskHandlers = (collectFunction, gainXpFunction) => {
     return [
         {
-            name: "Salad",
-            icon: ICON,
+            name: "salad",
+            item: items["salad"],
             interval: 1000,
             onTick: (villagerId) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;
@@ -14,8 +16,8 @@ export const getFarmingTaskHandlers = (collectFunction, gainXpFunction) => {
             }
         },
         {
-            name: "Wheat",
-            icon: ICON,
+            name: "wheat",
+            item: items["wheat"],
             interval: 3000,
             onTick: (villagerId) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;

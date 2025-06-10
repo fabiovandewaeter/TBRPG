@@ -20,4 +20,9 @@ export const items = {
         icon: "🪨",
         categories: ["material"],
     },
+    iron: {
+        displayName: "Iron",
+        icon: "🪨",
+        categories: ["material"],
+    },
 };
