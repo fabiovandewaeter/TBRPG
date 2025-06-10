@@ -7,12 +7,12 @@ const formatTime = (seconds) => {
     return `${m}:${s}`;
 };
 
-const Timer = () => {
+const Timer = ({ text }) => {
 
     const { timeLeft } = useContext(VillageManagerContext);
 
     return (
-        <p>⏳ Prochaine famine dans : <strong>{formatTime(timeLeft)}</strong></p>
+        <p>{text} <strong>{formatTime(timeLeft)}</strong></p>
     );
 }
 

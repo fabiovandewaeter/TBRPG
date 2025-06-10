@@ -20,7 +20,7 @@ const VillagePage = () => {
     return (
         <div>
             <h1>Village</h1>
-            <Timer />
+            <Timer text={"⏳Time before feeding the villagers :"} />
             <button onClick={addVillager}>add Villager</button>
             <div className="villagers-list">
                 <h2>Villagers</h2>
