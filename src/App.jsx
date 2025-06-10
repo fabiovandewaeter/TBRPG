@@ -13,12 +13,23 @@ import { useContext, useEffect } from 'react'; // Ajout de useContext
 import { ResourceContext } from './context/ResourceContext';
 import { VillagerContext } from './context/VillagerContext';
 import { VillageManagerContext } from './context/VillageManagerContext';
+import SaveControls from './context/SaveControls';
 
 function SaveManager() {
   const { saveGame } = useSave();
   const { resources } = useContext(ResourceContext);
   const { villagers, deadVillagers } = useContext(VillagerContext);
   const { timeLeft } = useContext(VillageManagerContext);
+
+  // Sauvegarder les états dans localStorage pour l'export
+  useEffect(() => {
+    localStorage.setItem('resources_state', JSON.stringify(resources));
+    localStorage.setItem('villagers_state', JSON.stringify({
+      villagers, // Maintenant stocké comme objet { villagers: [], deadVillagers: [] }
+      deadVillagers
+    }));
+    localStorage.setItem('villageManager_state', JSON.stringify({ timeLeft }));
+  }, [resources, villagers, deadVillagers, timeLeft]);
 
   useEffect(() => {
     const saveData = {
@@ -40,8 +51,8 @@ function AppContent() {
   return (
     <ResourceProvider initialState={saveData?.resources}>
       <VillagerProvider initialState={{
-        villagers: saveData?.villagers,
-        deadVillagers: saveData?.deadVillagers
+        villagers: saveData?.villagers?.villagers,
+        deadVillagers: saveData?.villagers?.deadVillagers
       }}>
         <VillageManagerProvider initialState={saveData?.villageManager}>
           <TaskManagerProvider>
@@ -56,15 +67,7 @@ function AppContent() {
                     <li><Link to="/farming" className="nav-link">🌱️ Farming</Link></li>
                     <li><Link to="/stats" className="nav-link">📊 Stats</Link></li>
                     <li>
-                      <button
-                        onClick={() => {
-                          localStorage.removeItem("game_save");
-                          window.location.reload();
-                        }}
-                        className="nav-link"
-                      >
-                        🔄 Reset
-                      </button>
+                      <SaveControls />
                     </li>
                   </ul>
                 </nav>
