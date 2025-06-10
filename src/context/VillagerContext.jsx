@@ -4,6 +4,7 @@ export const VillagerContext = createContext();
 
 export const VillagerProvider = ({ children }) => {
     const [villagers, setVillagers] = useState([]);
+    const [deadVillagers, setDeadVillagers] = useState([]);
 
     // Add a new villager with unique id
     const addVillager = useCallback(() => {
@@ -47,6 +48,17 @@ export const VillagerProvider = ({ children }) => {
         );
     }, []);
 
+    const killVillager = useCallback((villagerId) => {
+        setDeadVillagers(prev => {
+            const victim = prev.find(v => v.id === villagerId);
+            if (victim) {
+                setDeadVillagers(dv => [...dv, victim]);
+                return prev.filter(v => v.id !== villagerId);
+            }
+            return prev;
+        });
+    }, []);
+
     return (
         <VillagerContext.Provider
             value={{
@@ -54,7 +66,8 @@ export const VillagerProvider = ({ children }) => {
                 addVillager,
                 assignTask,
                 unassignTask,
-                gainXp
+                gainXp,
+                killVillager
             }}
         >
             {children}

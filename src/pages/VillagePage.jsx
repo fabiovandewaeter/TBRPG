@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef } from 'react';
 import { VillagerContext } from '../context/VillagerContext';
 import VillageInfo from '../components/VillagerInfo';
+import Timer from '../components/Timer';
 
 const VillagePage = () => {
     const { villagers, addVillager } = useContext(VillagerContext);
@@ -19,6 +20,7 @@ const VillagePage = () => {
     return (
         <div>
             <h1>Village</h1>
+            <Timer />
             <button onClick={addVillager}>add Villager</button>
             <div className="villagers-list">
                 <h2>Villagers</h2>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react';
 import { ResourceContext } from './ResourceContext';
 import { VillagerContext } from './VillagerContext';
 import { getCombatTaskHandlers } from '../data/tasks/combat/combatTasks';
@@ -12,11 +12,11 @@ export const TaskManagerProvider = ({ children }) => {
     const { villagers, gainXp } = useContext(VillagerContext);
 
     const timersRef = useRef({});
-    const taskHandlers = [
+    const taskHandlers = useMemo(() => [
         ...getCombatTaskHandlers(collect, gainXp),
         ...getMiningTaskHandlers(collect, gainXp),
         ...getFarmingTaskHandlers(collect, gainXp)
-    ];
+    ], [collect, gainXp]);
 
     useEffect(() => {
         villagers.forEach(v => {
