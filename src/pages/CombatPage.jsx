@@ -17,7 +17,7 @@ const CombatPage = () => {
             <h1>Combat tasks</h1>
             <div className="tasks">
                 {taskHandlers.map(({ name, icon }) => (
-                    <TaskDropdown taskType={TASK_TYPE} taskName={name} icon={icon} displayName={name} />
+                    <TaskDropdown key={name} taskType={TASK_TYPE} taskName={name} icon={icon} displayName={name} />
                 ))}
             </div>
         </div>

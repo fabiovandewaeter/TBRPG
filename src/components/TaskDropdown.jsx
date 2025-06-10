@@ -32,7 +32,7 @@ const TaskDropdown = ({ taskType, taskName, icon, displayName }) => {
     };
 
     return (
-        <div key={taskName}>
+        <div>
             <h2>{icon} {displayName}</h2>
             <div className="task-dropdown">
                 <select value={selectedVillager ? selectedVillager.id : ''} onChange={handleChange}>
