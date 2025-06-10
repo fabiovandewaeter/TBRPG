@@ -25,7 +25,7 @@ export const TaskManagerProvider = ({ children }) => {
             const handler = taskHandlers.find(h => h.name === taskName);
 
             // Calculer le niveau actuel pour cette tâche
-            const xpForTask = v.xp?.[handler?.taskType] || 0;
+            const xpForTask = v.xp?.[handler?.task_type] || 0;
             const currentLevel = getLevel(xpForTask);
 
             // Vérifier si on doit mettre à jour le timer

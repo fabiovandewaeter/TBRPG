@@ -8,6 +8,7 @@ export const getFarmingTaskHandlers = (collectFunction, gainXpFunction, getLevel
         {
             name: "salad",
             item: items["salad"],
+            task_type: TASK_TYPE,
             baseInterval: 1000,
             onTick: (villager) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;
@@ -18,6 +19,7 @@ export const getFarmingTaskHandlers = (collectFunction, gainXpFunction, getLevel
         {
             name: "wheat",
             item: items["wheat"],
+            task_type: TASK_TYPE,
             baseInterval: 3000,
             onTick: (villager) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;

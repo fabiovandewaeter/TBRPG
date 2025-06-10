@@ -8,6 +8,7 @@ export const getMiningTaskHandlers = (collectFunction, gainXpFunction, getLevel)
         {
             name: "stone",
             item: items["stone"],
+            task_type: TASK_TYPE,
             baseInterval: 1000,
             onTick: (villager) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;
@@ -18,6 +19,7 @@ export const getMiningTaskHandlers = (collectFunction, gainXpFunction, getLevel)
         {
             name: "iron",
             item: items["iron"],
+            task_type: TASK_TYPE,
             baseInterval: 3000,
             onTick: (villager) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;

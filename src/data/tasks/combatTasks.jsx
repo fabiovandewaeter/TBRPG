@@ -8,6 +8,7 @@ export const getCombatTaskHandlers = (collectFunction, gainXpFunction, getLevelF
         {
             name: "slime",
             monster: monsters["slime"],
+            task_type: TASK_TYPE,
             baseInterval: 1000,
             onTick: (villager) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;
@@ -18,6 +19,7 @@ export const getCombatTaskHandlers = (collectFunction, gainXpFunction, getLevelF
         {
             name: "wolf",
             monster: monsters["wolf"],
+            task_type: TASK_TYPE,
             baseInterval: 3000,
             onTick: (villager) => {
                 const resourceGain = Math.floor(Math.random() * 3) + 1;
