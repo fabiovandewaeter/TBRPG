@@ -4,7 +4,12 @@
   <img src="./public/assets/favicon/favicon.svg" alt="logo" width="30%">
 </p>
 
-# Commands
+# Try
+## GitHub pages
+
+https://fabiovandewaeter.github.io/TBRPG/
+
+## Commands
 
 ```bash
 npm install

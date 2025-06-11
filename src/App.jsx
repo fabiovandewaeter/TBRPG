@@ -79,6 +79,7 @@ function AppContent() {
                   <div className="main-content">
                     <Routes>
                       <Route path="/" element={<Navigate to="/village" replace />} />
+
                       <Route path="/village" element={<VillagePage />} />
                       <Route path="/dungeons" element={<DungeonsPage />} />
                       <Route path="/battle" element={<BattlePage />} />
@@ -86,6 +87,8 @@ function AppContent() {
                       <Route path="/mineTasks" element={<MiningTasksPage />} />
                       <Route path="/farmingTasks" element={<FarmingTasksPage />} />
                       <Route path="/stats" element={<StatsPage />} />
+
+                      <Route path="*" element={<Navigate to="/village" replace />} />
                     </Routes>
                   </div>
                 </div>
