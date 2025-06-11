@@ -15,18 +15,21 @@ const TeamChoice = () => {
     };
 
     const teamMembers = villagers.filter(v => team.includes(v.id));
-    const availableOptions = villagers.filter(v =>
-        team.includes(v.id) || team.length < 5
-    );
+    const availableOptions = villagers
+        .filter(v => !team.includes(v.id))       // Exclude already in team
+        .filter(v => !v.currentTask)             // Exclude villagers with an active task
+        .slice(0, Math.max(5 - team.length, 0));  // Limit to remaining slots
 
     return (
         <div>
             <h2>🎯 Sélection de l'équipe</h2>
-            <select value="" onChange={handleChange}>
-                <option value="">-- Ajouter un villageois --</option>
+            <select value="" onChange={handleChange} disabled={team.length >= 5 || availableOptions.length === 0}>
+                <option value="">
+                    {team.length >= 5 ? "Équipe complète" : "-- Ajouter un villageois --"}
+                </option>
                 {availableOptions.map(v => (
                     <option key={v.id} value={v.id}>
-                        {team.includes(v.id) ? `✅ ${v.name}` : v.name}
+                        {v.name}
                     </option>
                 ))}
             </select>
