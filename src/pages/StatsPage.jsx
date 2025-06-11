@@ -10,7 +10,7 @@ const StatsPage = () => {
             <h1>Resources</h1>
             <ul>
                 {Object.entries(resources).map((resource) => (
-                    <li>{resource[0]}: {resource[1]}</li>
+                    <li key={resource[0]}>{resource[0]}: {resource[1]}</li>
                 ))}
             </ul>
         </div>

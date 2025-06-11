@@ -1,77 +1,143 @@
-import React, { createContext, useCallback, useState } from 'react';
+// src/contexts/VillagerContext.jsx
+import React, { createContext, useReducer, useCallback, useEffect } from 'react';
+import { weapons } from '../data/weapons';
+import { attacks } from '../data/attacks';
 
 export const VillagerContext = createContext();
 
-export const VillagerProvider = ({ children, initialState }) => {
-    const [villagers, setVillagers] = useState(initialState?.villagers || []);
-    const [deadVillagers, setDeadVillagers] = useState(initialState?.deadVillagers || []);
+const defaultInitialState = {
+    villagers: [],        // { id, name, hp, baseStats: { attack, defense }, xp, equipment }
+    deadVillagers: []     // même shape que villagers
+};
 
-    // Add a new villager with unique id
-    const addVillager = useCallback(() => {
-        setVillagers(vs => [
-            ...vs,
-            { id: Date.now().toString(), name: `Villager ${vs.length + 1}`, currentTask: null, xp: {} }
-        ]);
-    }, []);
-
-    const assignTask = useCallback((villagerId, taskName) => {
-        setVillagers(prev =>
-            prev.map(v =>
-                v.id === villagerId ? { ...v, currentTask: taskName } : v
-            )
-        );
-    }, []);
-
-    const unassignTask = useCallback((villagerId) => {
-        setVillagers(prev =>
-            prev.map(v =>
-                v.id === villagerId ? { ...v, currentTask: null } : v
-            )
-        );
-    }, []);
-
-    const gainXp = useCallback((villagerId, taskType, amount) => {
-        setVillagers(prev =>
-            prev.map(v => {
-                if (v.id === villagerId) {
-                    const currentXp = v.xp[taskType] || 0;
+function reducer(state, action) {
+    switch (action.type) {
+        case 'INIT':
+            return { ...state, ...action.payload };
+        case 'ADD_VILLAGER': {
+            const nextId = Date.now().toString();
+            const newVillager = {
+                id: nextId,
+                name: `Villager ${state.villagers.length + state.villagers.length + 1}`,
+                hp: 100,
+                baseStats: { attack: 5, defense: 2 },
+                xp: {},
+                equipment: { mainHand: weapons.sword },
+                currentTask: null,
+            };
+            return { ...state, villagers: [...state.villagers, newVillager] };
+        }
+        case 'ASSIGN_TASK':
+            return {
+                ...state,
+                villagers: state.villagers.map(v =>
+                    v.id === action.villagerId
+                        ? { ...v, currentTask: action.taskName }
+                        : v
+                ),
+            };
+        case 'UNASSIGN_TASK':
+            return {
+                ...state,
+                villagers: state.villagers.map(v =>
+                    v.id === action.villagerId
+                        ? { ...v, currentTask: null }
+                        : v
+                ),
+            };
+        case 'GAIN_XP':
+            return {
+                ...state,
+                villagers: state.villagers.map(v => {
+                    if (v.id !== action.villagerId) return v;
+                    const prev = v.xp[action.taskType] || 0;
                     return {
                         ...v,
-                        xp: {
-                            ...v.xp,
-                            [taskType]: currentXp + amount
-                        }
+                        xp: { ...v.xp, [action.taskType]: prev + action.amount }
                     };
-                }
-                return v;
-            })
-        );
-    }, []);
+                }),
+            };
+        case 'KILL_VILLAGER': {
+            const victim = state.villagers.find(v => v.id === action.villagerId);
+            if (!victim) return state;
+            return {
+                ...state, // Conserver les autres propriétés
+                villagers: state.villagers.filter(v => v.id !== action.villagerId),
+                deadVillagers: [...state.deadVillagers, victim],
+            };
+        }
+        case 'ATTACK': {
+            const { attackerId, targetId, attackName } = action;
+            const attacker = state.villagers.find(v => v.id === attackerId);
+            const target = state.villagers.find(v => v.id === targetId);
+            if (!attacker || !target) return state;
 
-    const getLevel = useCallback((xp) => {
-        return Math.floor(xp / 100) + 1;
-    }, []);
+            // récupérer l’attaque et l’arme
+            const atk = attacks[attackName];
+            const weap = attacker.equipment.mainHand;
+            const statAtk = attacker.baseStats.attack + (weap.stats.attack || 0);
 
-    const killVillager = useCallback((villagerId) => {
-        // find the villager to kill
-        const victim = villagers.find(v => v.id === villagerId);
-        if (!victim) return; // pas trouvé => on ne fait rien
-        // remove from villagers
-        setVillagers(prev => prev.filter(v => v.id !== villagerId));
-        // add to deadVillagers
-        setDeadVillagers(prev => [...prev, victim]);
-    }, [villagers, setVillagers, setDeadVillagers]);
+            // dégâts = baseDamages + statAtk
+            const damage = atk.baseDamages + statAtk;
+            const newHp = target.hp - damage;
+
+            // builder la nouvelle liste de villagers mise à jour
+            let updatedVillagers = state.villagers.map(v => {
+                if (v.id !== targetId) return v;
+                return { ...v, hp: newHp > 0 ? newHp : 0 };
+            });
+
+            let updatedDead = state.deadVillagers;
+            // si la cible est morte, on la retire et on la met dans deadVillagers
+            if (newHp <= 0) {
+                const killed = updatedVillagers.find(v => v.id === targetId);
+                updatedVillagers = updatedVillagers.filter(v => v.id !== targetId);
+                updatedDead = [...state.deadVillagers, killed];
+            }
+
+            return {
+                ...state, // Conserver les autres propriétés
+                villagers: updatedVillagers,
+                deadVillagers: updatedDead
+            };
+        }
+        default:
+            return state;
+    }
+}
+
+export const VillagerProvider = ({ children, initialState }) => {
+    const [state, dispatch] = useReducer(reducer, { ...defaultInitialState, ...initialState });
+
+    // Dispatch INIT au montage avec les données initiales
+    useEffect(() => {
+        if (initialState) {
+            dispatch({ type: 'INIT', payload: initialState });
+        }
+    }, [initialState]);
+
+    const addVillager = useCallback(() => dispatch({ type: 'ADD_VILLAGER' }), []);
+    const assignTask = useCallback((id, task) => dispatch({ type: 'ASSIGN_TASK', villagerId: id, taskName: task }), []);
+    const unassignTask = useCallback((id, task) => dispatch({ type: 'UNASSIGN_TASK', villagerId: id }), []);
+    const gainXp = useCallback((id, type, amt) => dispatch({ type: 'GAIN_XP', villagerId: id, taskType: type, amount: amt }), []);
+    const killVillager = useCallback(id => dispatch({ type: 'KILL_VILLAGER', villagerId: id }), []);
+    const attack = useCallback((attackerId, targetId, attackName = 'basic') =>
+        dispatch({ type: 'ATTACK', attackerId, targetId, attackName }), []);
+
+    const getLevel = useCallback(xp => Math.floor(xp / 100) + 1, []);
 
     return (
         <VillagerContext.Provider
             value={{
-                villagers,
+                villagers: state.villagers,
+                deadVillagers: state.deadVillagers,
                 addVillager,
                 assignTask,
                 unassignTask,
                 gainXp,
+                killVillager,
+                attack,
                 getLevel,
-                killVillager
             }}
         >
             {children}

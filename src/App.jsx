@@ -9,7 +9,7 @@ import { VillagerProvider } from './context/VillagerContext';
 import { TaskManagerProvider } from './context/TaskManagerContext';
 import { VillageManagerProvider } from './context/VillageManagerContext';
 import { SaveProvider, useSave } from './context/SaveContext';
-import { useContext, useEffect } from 'react'; // Ajout de useContext
+import { useContext, useEffect } from 'react';
 import { ResourceContext } from './context/ResourceContext';
 import { VillagerContext } from './context/VillagerContext';
 import { VillageManagerContext } from './context/VillageManagerContext';
@@ -34,8 +34,7 @@ function SaveManager() {
   useEffect(() => {
     const saveData = {
       resources,
-      villagers,
-      deadVillagers,
+      villagers: { villagers, deadVillagers },
       villageManager: { timeLeft }
     };
     saveGame(saveData);
@@ -51,8 +50,8 @@ function AppContent() {
   return (
     <ResourceProvider initialState={saveData?.resources}>
       <VillagerProvider initialState={{
-        villagers: saveData?.villagers?.villagers,
-        deadVillagers: saveData?.villagers?.deadVillagers
+        villagers: saveData?.villagers?.villagers || [],
+        deadVillagers: saveData?.villagers?.deadVillagers || []
       }}>
         <VillageManagerProvider initialState={saveData?.villageManager}>
           <TaskManagerProvider>
