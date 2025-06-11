@@ -1,8 +1,8 @@
 import { useContext, useEffect, useRef } from 'react';
-import { VillagerContext } from '../context/VillagerContext';
+import { VillagerContext } from '../contexts/VillagerContext';
 import VillageInfo from '../components/VillagerInfo';
 import Timer from '../components/Timer';
-import { ResourceContext } from '../context/ResourceContext';
+import { ResourceContext } from '../contexts/ResourceContext';
 
 const VillagePage = () => {
     const { villagers, addVillager } = useContext(VillagerContext);

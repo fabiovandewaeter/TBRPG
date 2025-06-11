@@ -1,6 +1,6 @@
 /* TaskDropdown.jsx */
 import React, { useContext } from 'react';
-import { VillagerContext } from '../context/VillagerContext';
+import { VillagerContext } from '../contexts/VillagerContext';
 
 /**
  * Dropdown to assign/unassign a villager to a given task.

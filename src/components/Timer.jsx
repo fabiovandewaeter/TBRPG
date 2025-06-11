@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { VillageManagerContext } from "../context/VillageManagerContext";
+import { VillageManagerContext } from "../contexts/VillageManagerContext";
 
 const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');

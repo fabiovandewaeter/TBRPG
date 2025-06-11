@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { ResourceContext } from '../context/ResourceContext';
-import { VillagerContext } from '../context/VillagerContext';
+import { ResourceContext } from '../contexts/ResourceContext';
+import { VillagerContext } from '../contexts/VillagerContext';
 import { getFarmingTaskHandlers } from '../data/tasks/farmingTasks';
 import TaskDropdown from '../components/TaskDropdown';
 

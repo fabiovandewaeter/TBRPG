@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ResourceContext } from '../context/ResourceContext';
+import { ResourceContext } from '../contexts/ResourceContext';
 
 const StatsPage = () => {
 
