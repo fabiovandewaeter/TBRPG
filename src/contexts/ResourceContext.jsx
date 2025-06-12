@@ -3,8 +3,10 @@ import { items } from '../data/items';
 
 export const ResourceContext = createContext();
 
+const defaultState = { salad: 100 };
+
 export const ResourceProvider = ({ children, initialState }) => {
-    const [resources, setResources] = useState(initialState || {});
+    const [resources, setResources] = useState(initialState ? { ...defaultState, ...initialState } : defaultState);
 
     // function to collect a resource
     const collect = useCallback((type, amount) => {
