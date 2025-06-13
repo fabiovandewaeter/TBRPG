@@ -1,4 +1,3 @@
-// src/components/TeamChoice.jsx
 import React, { useContext } from 'react';
 import { VillagerContext } from '../contexts/VillagerContext';
 import { useTeam } from '../contexts/TeamContext';

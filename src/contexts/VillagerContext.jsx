@@ -1,4 +1,3 @@
-// src/contexts/VillagerContext.jsx
 import React, { createContext, useReducer, useCallback, useEffect } from 'react';
 import { weapons } from '../data/weapons';
 import { attacks } from '../data/attacks';
@@ -6,7 +5,7 @@ import { attacks } from '../data/attacks';
 export const VillagerContext = createContext();
 
 const defaultInitialState = {
-    villagers: [],        // { id, name, hp, baseStats: { attack, defense }, xp, equipment }
+    villagers: [],        // { id, name, hp, stats: { attack, defense }, xp, equipment }
     deadVillagers: []     // même shape que villagers
 };
 
@@ -19,8 +18,7 @@ function reducer(state, action) {
             const newVillager = {
                 id: nextId,
                 name: `Villager ${state.villagers.length + state.villagers.length + 1}`,
-                hp: 100,
-                baseStats: { attack: 5, defense: 2 },
+                stats: { hp: 100, maxHp: 100, attack: 5, defense: 2 },
                 xp: {},
                 equipment: { mainHand: weapons.sword },
                 currentTask: null,
@@ -66,7 +64,8 @@ function reducer(state, action) {
                 deadVillagers: [...state.deadVillagers, victim],
             };
         }
-        case 'ATTACK': {
+        case 'ATTACK_VILLAGER': {
+            console.log(action);
             const { attackerId, targetId, attackName } = action;
             const attacker = state.villagers.find(v => v.id === attackerId);
             const target = state.villagers.find(v => v.id === targetId);
@@ -75,7 +74,7 @@ function reducer(state, action) {
             // récupérer l’attaque et l’arme
             const atk = attacks[attackName];
             const weap = attacker.equipment.mainHand;
-            const statAtk = attacker.baseStats.attack + (weap.stats.attack || 0);
+            const statAtk = attacker.stats.attack + (weap.stats.attack || 0);
 
             // dégâts = baseDamages + statAtk
             const damage = atk.baseDamages + statAtk;
@@ -106,6 +105,15 @@ function reducer(state, action) {
     }
 }
 
+export const calculateStats = (entity) => {
+    const { stats, equipment } = entity;
+    const weaponStats = equipment?.mainHand?.stats || {};
+
+    return {
+        ...stats, attack: stats.attack + (weaponStats.attack || 0), defense: stats.defense,
+    }
+};
+
 export const VillagerProvider = ({ children, initialState }) => {
     const [state, dispatch] = useReducer(reducer, { ...defaultInitialState, ...initialState });
 
@@ -121,8 +129,8 @@ export const VillagerProvider = ({ children, initialState }) => {
     const unassignTask = useCallback((id, task) => dispatch({ type: 'UNASSIGN_TASK', villagerId: id }), []);
     const gainXp = useCallback((id, type, amt) => dispatch({ type: 'GAIN_XP', villagerId: id, taskType: type, amount: amt }), []);
     const killVillager = useCallback(id => dispatch({ type: 'KILL_VILLAGER', villagerId: id }), []);
-    const attack = useCallback((attackerId, targetId, attackName = 'basic') =>
-        dispatch({ type: 'ATTACK', attackerId, targetId, attackName }), []);
+    const attackVillager = useCallback((attackerId, targetId, attackName = 'basic') =>
+        dispatch({ type: 'ATTACK_VILLAGER', attackerId, targetId, attackName }), []);
 
     const getLevel = useCallback(xp => Math.floor(xp / 100) + 1, []);
 
@@ -136,7 +144,7 @@ export const VillagerProvider = ({ children, initialState }) => {
                 unassignTask,
                 gainXp,
                 killVillager,
-                attack,
+                attackVillager,
                 getLevel,
             }}
         >

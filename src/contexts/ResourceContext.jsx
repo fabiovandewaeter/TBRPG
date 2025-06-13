@@ -3,7 +3,7 @@ import { items } from '../data/items';
 
 export const ResourceContext = createContext();
 
-const defaultState = { salad: 100 };
+const defaultState = { salad: 10000000 };
 
 export const ResourceProvider = ({ children, initialState }) => {
     const [resources, setResources] = useState(initialState ? { ...defaultState, ...initialState } : defaultState);

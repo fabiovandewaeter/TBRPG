@@ -4,6 +4,8 @@ export const attacks = {
         icon: "💥️",
         baseDamages: 10,
         types: ["normal"],
-        apply: () => { },
+        onApply(source, target) {
+            // nothing special for basic attack 
+        },
     },
 };
