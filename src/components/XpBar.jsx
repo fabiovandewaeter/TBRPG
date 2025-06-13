@@ -13,16 +13,8 @@ const XpBar = ({ xp, max = 100, taskType }) => {
     const level = Math.floor(xp_ammount / max) + 1;
 
     return (
-        <div className="xp-bar">
-            <div className="xp-label">
-                Lvl {level} - {xp_ammount % max}/{max} XP
-            </div>
-            <div className="xp-container">
-                <div
-                    className="xp-fill"
-                    style={{ width: `${percentage}%` }}
-                />
-            </div>
+        <div className="xp-label">
+            <b>{taskType}</b>: Lvl {level} - {xp_ammount % max}/{max} XP
         </div>
     );
 };

@@ -9,11 +9,11 @@ import { VillagerProvider } from './contexts/VillagerContext';
 import { TaskManagerProvider } from './contexts/TaskManagerContext';
 import { VillageManagerProvider } from './contexts/VillageManagerContext';
 import { SaveProvider, useSave } from './contexts/SaveContext';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ResourceContext } from './contexts/ResourceContext';
 import { VillagerContext } from './contexts/VillagerContext';
 import { VillageManagerContext } from './contexts/VillageManagerContext';
-import SaveControls from './contexts/SaveControls';
+import SaveControls from './components/SaveControls';
 import DungeonsPage from './pages/DungeonsPage';
 import BattlePage from './pages/BattlePage';
 import { TeamProvider } from './contexts/TeamContext';
@@ -47,8 +47,12 @@ function SaveManager() {
 }
 
 function AppContent() {
+  // Save
   const { loadSave } = useSave();
   const saveData = loadSave();
+  // UI
+  const [combatOpen, setCombatOpen] = useState(true);
+  const [nonCombatOpen, setNonCombatOpen] = useState(true);
 
   return (
     <ResourceProvider initialState={saveData?.resources}>
@@ -62,19 +66,22 @@ function AppContent() {
               <BrowserRouter basename="/TBRPG">
                 <SaveManager />
                 <div className="app-layout">
-                  <nav className="sidebar">
-                    <ul>
-                      <li><Link to="/village" className="nav-link">🏠 Village</Link></li>
-                      <li><Link to="/dungeons" className="nav-link">🏰 Dungeons</Link></li>
-                      <li><Link to="/combatTasks" className="nav-link">⚔️ Combat tasks</Link></li>
-                      <li><Link to="/mineTasks" className="nav-link">⛏️ Miner tasks</Link></li>
-                      <li><Link to="/farmingTasks" className="nav-link">🌱️ Farming tasks</Link></li>
-                      <li><Link to="/stats" className="nav-link">📊 Stats</Link></li>
-                      <li>
-                        <SaveControls />
-                      </li>
-                    </ul>
-                  </nav>
+                  <div className="left-panel">
+                    <img className="logo" alt="logo" src="./assets/favicon/favicon.svg" />
+                    <nav className="sidebar">
+                      <ul>
+                        <li><Link to="/village" className="nav-link">🏠 Village</Link></li>
+                        <li><Link to="/dungeons" className="nav-link">🏰 Dungeons</Link></li>
+                        <li><Link to="/combatTasks" className="nav-link">⚔️ Combat tasks</Link></li>
+                        <li><Link to="/mineTasks" className="nav-link">⛏️ Miner tasks</Link></li>
+                        <li><Link to="/farmingTasks" className="nav-link">🌱️ Farming tasks</Link></li>
+                        <li><Link to="/stats" className="nav-link">📊 Stats</Link></li>
+                        <li>
+                          <SaveControls />
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
 
                   <div className="main-content">
                     <Routes>
