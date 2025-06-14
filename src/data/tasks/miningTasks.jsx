@@ -3,7 +3,7 @@ import { items } from "../items";
 const TASK_TYPE = "mining";
 const ICON = "⛏️";
 
-export const getMiningTaskHandlers = (collectFunction, gainXpFunction, getLevel) => {
+export const getMiningTaskHandlers = (collectFunction, gainXpFunction) => {
     return [
         {
             name: "stone",

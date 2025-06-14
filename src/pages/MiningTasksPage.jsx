@@ -8,9 +8,9 @@ const TASK_TYPE = "mining";
 
 const MiningPage = () => {
     const { collect } = useContext(ResourceContext);
-    const { gainXp, getLevel } = useContext(VillagerContext);
+    const { gainXp } = useContext(VillagerContext);
 
-    const taskHandlers = getMiningTaskHandlers(collect, gainXp, getLevel);
+    const taskHandlers = getMiningTaskHandlers(collect, gainXp);
 
     return (
         <div>

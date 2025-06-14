@@ -1,6 +1,6 @@
-import React from 'react';
+import { DEFAULT_MAX_XP, getLevel } from "../utils/entityUtils";
 
-const XpBar = ({ xp, max = 100, taskType }) => {
+const XpBar = ({ xp, max = DEFAULT_MAX_XP, taskType }) => {
 
     let xp_ammount = 0;
 
@@ -9,8 +9,7 @@ const XpBar = ({ xp, max = 100, taskType }) => {
         xp_ammount = 0
     }
 
-    const percentage = Math.min(100, (xp_ammount % max) * 100 / max);
-    const level = Math.floor(xp_ammount / max) + 1;
+    const level = getLevel(xp_ammount, max);
 
     return (
         <div className="xp-label">

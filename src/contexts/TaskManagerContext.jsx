@@ -4,19 +4,20 @@ import { VillagerContext } from './VillagerContext';
 import { getCombatTaskHandlers } from '../data/tasks/combatTasks';
 import { getMiningTaskHandlers } from '../data/tasks/miningTasks';
 import { getFarmingTaskHandlers } from '../data/tasks/farmingTasks';
+import { getLevel } from '../utils/entityUtils';
 
 export const TaskManagerContext = createContext();
 
 export const TaskManagerProvider = ({ children }) => {
     const { collect } = useContext(ResourceContext);
-    const { villagers, gainXp, getLevel } = useContext(VillagerContext);
+    const { villagers, gainXp } = useContext(VillagerContext);
 
     const timersRef = useRef({});
     const taskHandlers = useMemo(() => [
-        ...getCombatTaskHandlers(collect, gainXp, getLevel),
-        ...getMiningTaskHandlers(collect, gainXp, getLevel),
-        ...getFarmingTaskHandlers(collect, gainXp, getLevel)
-    ], [collect, gainXp, getLevel]);
+        ...getCombatTaskHandlers(collect, gainXp),
+        ...getMiningTaskHandlers(collect, gainXp),
+        ...getFarmingTaskHandlers(collect, gainXp)
+    ], [collect, gainXp]);
 
     useEffect(() => {
         villagers.forEach(v => {
@@ -68,7 +69,7 @@ export const TaskManagerProvider = ({ children }) => {
                 delete timersRef.current[id];
             }
         });
-    }, [villagers, taskHandlers, getLevel]);
+    }, [villagers, taskHandlers]);
 
     return (
         <TaskManagerContext.Provider value={{}}>

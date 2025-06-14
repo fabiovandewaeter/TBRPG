@@ -8,9 +8,9 @@ const TASK_TYPE = "combat";
 
 const CombatPage = () => {
     const { collect } = useContext(ResourceContext);
-    const { gainXp, getLevel } = useContext(VillagerContext);
+    const { gainXp } = useContext(VillagerContext);
 
-    const taskHandlers = getCombatTaskHandlers(collect, gainXp, getLevel);
+    const taskHandlers = getCombatTaskHandlers(collect, gainXp);
 
     return (
         <div>

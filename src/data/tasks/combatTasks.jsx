@@ -3,7 +3,7 @@ import { monsters } from "../monsters";
 const TASK_TYPE = "combat";
 const ICON = "⚔️";
 
-export const getCombatTaskHandlers = (collectFunction, gainXpFunction, getLevelFunction) => {
+export const getCombatTaskHandlers = (collectFunction, gainXpFunction) => {
     return [
         {
             name: "slime",

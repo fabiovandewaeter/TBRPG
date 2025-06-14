@@ -8,9 +8,9 @@ const TASK_TYPE = "farming";
 
 const FarmingPage = () => {
     const { collect } = useContext(ResourceContext);
-    const { gainXp, getLevel } = useContext(VillagerContext);
+    const { gainXp } = useContext(VillagerContext);
 
-    const taskHandlers = getFarmingTaskHandlers(collect, gainXp, getLevel);
+    const taskHandlers = getFarmingTaskHandlers(collect, gainXp);
 
     return (
         <div>

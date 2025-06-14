@@ -3,7 +3,7 @@ import { items } from "../items";
 const TASK_TYPE = "farming";
 const ICON = "🌱";
 
-export const getFarmingTaskHandlers = (collectFunction, gainXpFunction, getLevel) => {
+export const getFarmingTaskHandlers = (collectFunction, gainXpFunction) => {
     return [
         {
             name: "salad",

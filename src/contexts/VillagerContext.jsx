@@ -132,8 +132,6 @@ export const VillagerProvider = ({ children, initialState }) => {
     const attackVillager = useCallback((attackerId, targetId, attackName = 'basic') =>
         dispatch({ type: 'ATTACK_VILLAGER', attackerId, targetId, attackName }), []);
 
-    const getLevel = useCallback(xp => Math.floor(xp / 100) + 1, []);
-
     return (
         <VillagerContext.Provider
             value={{
@@ -145,7 +143,6 @@ export const VillagerProvider = ({ children, initialState }) => {
                 gainXp,
                 killVillager,
                 attackVillager,
-                getLevel,
             }}
         >
             {children}
