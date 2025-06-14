@@ -78,13 +78,20 @@ function reducer(state, action) {
 
             // dégâts = baseDamages + statAtk
             const damage = atk.baseDamages + statAtk;
-            const newHp = target.hp - damage;
+            const newHp = target.stats.hp - damage;
 
             // builder la nouvelle liste de villagers mise à jour
-            let updatedVillagers = state.villagers.map(v => {
-                if (v.id !== targetId) return v;
-                return { ...v, hp: newHp > 0 ? newHp : 0 };
-            });
+            let updatedVillagers = state.villagers.map(v =>
+                v.id === targetId
+                    ? {
+                        ...v,
+                        stats: {
+                            ...v.stats,
+                            hp: newHp > 0 ? newHp : 0
+                        }
+                    }
+                    : v
+            );
 
             let updatedDead = state.deadVillagers;
             // si la cible est morte, on la retire et on la met dans deadVillagers

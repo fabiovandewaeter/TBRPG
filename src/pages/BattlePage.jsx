@@ -50,6 +50,14 @@ const BattlePage = () => {
         setAwaitingAction(false);
     };
 
+    // À l’entrée en combat, on place le tour sur le premier vivant
+    useEffect(() => {
+        const firstAliveIndex = teamMembers.findIndex(v => v.stats.hp > 0);
+        if (firstAliveIndex !== -1 && firstAliveIndex !== turnIndex) {
+            setTurnIndex(firstAliveIndex);
+        }
+    }, [teamMembers]);
+
     // Gestion de la progression du tour
     useEffect(() => {
         const { monster, teamMembers } = stateRef.current;
@@ -113,12 +121,6 @@ const BattlePage = () => {
             ...logs,
             `${monster.name} attaque ${target.name} et inflige ${damage} dégâts!`
         ]);
-
-        /*attackVillager({
-            targetId: target.id,
-            newHp: updatedTarget.hp,
-            status: updatedTarget.status
-        });*/
 
         setAwaitingAction(false);
 
@@ -193,7 +195,7 @@ const BattlePage = () => {
             </div>
 
             <div className="action-section">
-                {currentVillager && awaitingAction && (
+                {currentVillager && awaitingAction && currentVillager.stats.hp > 0 && (
                     <ActionDropdown
                         attacker={currentVillager}
                         onSelect={onHeroAction}
