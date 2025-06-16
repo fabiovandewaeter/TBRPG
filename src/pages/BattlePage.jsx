@@ -1,222 +1,284 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { VillagerContext } from '../contexts/VillagerContext';
-import { useTeam } from '../contexts/TeamContext';
+import { TEAM_SIZE, useTeam } from '../contexts/TeamContext';
 import { monsters } from '../data/monsters';
 import ActionDropdown from '../components/ActionDropdown';
 import AttackSystem from '../systems/attackSystem';
 
 const BattlePage = () => {
-    const { villagers, attackVillager } = useContext(VillagerContext);
+    const { villagers, monsterAttackVillager } = useContext(VillagerContext);
     const { team } = useTeam();
     const teamMembers = villagers.filter(v => team.includes(v.id));
 
-    // État du monstre avec copie profonde initiale
+    // État du monstre
     const [monster, setMonster] = useState({
         ...monsters['dragon'],
         stats: { ...monsters['dragon'].stats }
     });
 
-    // Index du tour courant
-    const [turnIndex, setTurnIndex] = useState(0);
-    const [awaitingAction, setAwaitingAction] = useState(true);
+    // États de combat simplifiés
+    const [gameState, setGameState] = useState('HERO_TURN'); // 'HERO_TURN', 'MONSTER_TURN', 'VICTORY', 'DEFEAT'
+    const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
     const [combatLog, setCombatLog] = useState([]);
+    const [isAnimating, setIsAnimating] = useState(false);
 
-    // Référence pour suivre l'état actuel
-    const stateRef = useRef();
-    stateRef.current = {
-        turnIndex,
-        awaitingAction,
-        monster,
-        teamMembers,
-        villagers
-    };
-
-    const currentVillager = turnIndex < teamMembers.length
-        ? teamMembers[turnIndex]
-        : null;
-
-    // Action du héros
-    const onHeroAction = actionName => {
-        const updatedMonster = { ...monster, stats: { ...monster.stats } };
-        AttackSystem.applyAttack(currentVillager, updatedMonster, actionName);
-
-        const damage = monster.stats.hp - updatedMonster.stats.hp;
-        setCombatLog(logs => [
-            ...logs,
-            `${currentVillager.name} utilise ${actionName} et inflige ${damage} dégâts!`
-        ]);
-
-        setMonster(updatedMonster);
-        setAwaitingAction(false);
-    };
-
-    // À l’entrée en combat, on place le tour sur le premier vivant
-    useEffect(() => {
-        const firstAliveIndex = teamMembers.findIndex(v => v.stats.hp > 0);
-        if (firstAliveIndex !== -1 && firstAliveIndex !== turnIndex) {
-            setTurnIndex(firstAliveIndex);
-        }
+    // Obtenir les héros vivants
+    const getAliveHeroes = useCallback(() => {
+        return teamMembers.filter(v => v.stats.hp > 0);
     }, [teamMembers]);
 
-    // Gestion de la progression du tour
-    useEffect(() => {
-        const { monster, teamMembers } = stateRef.current;
-
-        // Vérifier les conditions de victoire/défaite
-        if (monster.stats.hp <= 0 || teamMembers.every(v => v.stats.hp <= 0)) {
-            return;
+    // Obtenir le héros actuel
+    const getCurrentHero = useCallback(() => {
+        const aliveHeroes = getAliveHeroes();
+        if (aliveHeroes.length === 0 || currentHeroIndex >= aliveHeroes.length) {
+            return null;
         }
+        return aliveHeroes[currentHeroIndex];
+    }, [getAliveHeroes, currentHeroIndex]);
 
-        if (!awaitingAction) {
-            let nextIndex = turnIndex;
-            let foundNext = false;
-
-            // Trouver le prochain héros vivant
-            if (turnIndex < teamMembers.length) {
-                for (let i = turnIndex + 1; i < teamMembers.length; i++) {
-                    if (teamMembers[i].stats.hp > 0) {
-                        nextIndex = i;
-                        foundNext = true;
-                        break;
-                    }
-                }
-
-                // Si aucun héros vivant après, passer au monstre
-                if (!foundNext) {
-                    nextIndex = teamMembers.length;
-                }
-            }
-            // Après le tour du monstre, revenir au premier héros vivant
-            else {
-                for (let i = 0; i < teamMembers.length; i++) {
-                    if (teamMembers[i].stats.hp > 0) {
-                        nextIndex = i;
-                        foundNext = true;
-                        break;
-                    }
-                }
-            }
-
-            setTurnIndex(nextIndex);
-            setAwaitingAction(true);
+    // Vérifier les conditions de fin
+    const checkGameEnd = useCallback(() => {
+        if (monster.stats.hp <= 0) {
+            setGameState('VICTORY');
+            return true;
         }
-    }, [awaitingAction, turnIndex, teamMembers]);
+        if (getAliveHeroes().length === 0) {
+            setGameState('DEFEAT');
+            return true;
+        }
+        return false;
+    }, [monster.stats.hp, getAliveHeroes]);
 
-    // Effet pour exécuter le tour du monstre
+    // Passer au héros suivant ou au monstre
+    const nextTurn = useCallback(() => {
+        if (checkGameEnd()) return;
+
+        const aliveHeroes = getAliveHeroes();
+        const nextHeroIndex = currentHeroIndex + 1;
+
+        if (nextHeroIndex >= aliveHeroes.length) {
+            // Tous les héros ont joué, c'est au tour du monstre
+            setCurrentHeroIndex(0);
+            setGameState('MONSTER_TURN');
+        } else {
+            // Passer au héros suivant
+            setCurrentHeroIndex(nextHeroIndex);
+            setGameState('HERO_TURN');
+        }
+    }, [checkGameEnd, getAliveHeroes, currentHeroIndex]);
+
+    // Action du héros
+    const handleHeroAction = useCallback((actionName) => {
+        if (gameState !== 'HERO_TURN' || isAnimating) return;
+
+        const currentHero = getCurrentHero();
+        if (!currentHero || currentHero.stats.hp <= 0) return;
+
+        setIsAnimating(true);
+
+        // Attaquer le monstre
+        const updatedMonster = { ...monster, stats: { ...monster.stats } };
+        const initialHp = updatedMonster.stats.hp;
+
+        AttackSystem.applyAttack(currentHero, updatedMonster, actionName);
+        const damage = initialHp - updatedMonster.stats.hp;
+
+        setCombatLog(prev => [...prev, `${currentHero.name} utilise ${actionName} et inflige ${damage} dégâts!`]);
+        setMonster(updatedMonster);
+
+        // Passer au tour suivant après animation
+        setTimeout(() => {
+            setIsAnimating(false);
+            nextTurn();
+        }, 500);
+    }, [gameState, isAnimating, getCurrentHero, monster, nextTurn]);
+
+    // Gestion du tour du monstre
     useEffect(() => {
-        if (turnIndex !== teamMembers.length || !awaitingAction) return;
-        if (monster.stats.hp <= 0) return;
+        if (gameState !== 'MONSTER_TURN' || isAnimating) return;
 
-        const alive = teamMembers.filter(v => v.stats.hp > 0);
-        if (alive.length === 0) return;
+        const executeMonsterTurn = () => {
+            if (checkGameEnd()) return;
 
-        const targetIndex = Math.floor(Math.random() * alive.length);
-        const target = alive[targetIndex];
-        const updatedTarget = { ...target };
+            setIsAnimating(true);
 
-        AttackSystem.applyAttack(monster, updatedTarget, 'basic');
-        const damage = target.stats.hp - updatedTarget.stats.hp;
+            const aliveHeroes = getAliveHeroes();
+            if (aliveHeroes.length === 0) {
+                setGameState('DEFEAT');
+                setIsAnimating(false);
+                return;
+            }
 
-        setCombatLog(logs => [
-            ...logs,
-            `${monster.name} attaque ${target.name} et inflige ${damage} dégâts!`
-        ]);
+            // Attaquer un héros aléatoire
+            const target = aliveHeroes[Math.floor(Math.random() * aliveHeroes.length)];
+            const damage = AttackSystem.calculateDamage(monster, target, 'basic');
 
-        setAwaitingAction(false);
+            monsterAttackVillager(target.id, damage);
+            setCombatLog(prev => [...prev, `${monster.name} attaque ${target.name} et inflige ${damage} dégâts!`]);
 
-    }, [turnIndex, awaitingAction, teamMembers, monster, attackVillager]);
+            // Retourner aux tours des héros après animation
+            setTimeout(() => {
+                setIsAnimating(false);
+                if (!checkGameEnd()) {
+                    setCurrentHeroIndex(0);
+                    setGameState('HERO_TURN');
+                }
+            }, 500);
+        };
 
-    // Fin de combat
-    if (monster.stats.hp <= 0) {
+        // Délai avant l'attaque du monstre pour l'effet dramatique
+        const timer = setTimeout(executeMonsterTurn, 1000);
+        return () => clearTimeout(timer);
+    }, [gameState, isAnimating, checkGameEnd, getAliveHeroes, monster, monsterAttackVillager]);
+
+    // Vérification périodique des conditions de fin
+    useEffect(() => {
+        checkGameEnd();
+    }, [monster.stats.hp, teamMembers, checkGameEnd]);
+
+    // Réinitialiser l'index du héros si nécessaire
+    useEffect(() => {
+        const aliveHeroes = getAliveHeroes();
+        if (currentHeroIndex >= aliveHeroes.length && aliveHeroes.length > 0) {
+            setCurrentHeroIndex(0);
+        }
+    }, [getAliveHeroes, currentHeroIndex]);
+
+    // Écrans de fin
+    if (gameState === 'VICTORY') {
         return (
             <div className="victory-screen">
-                <h1>Victoire ! 🎉 Le {monster.name} est vaincu.</h1>
+                <h1>🎉 Victoire ! Le {monster.name} est vaincu !</h1>
                 <h2>Journal de combat :</h2>
-                <ul>
-                    {combatLog.map((entry, i) => <li key={i}>{entry}</li>)}
-                </ul>
+                <div className="combat-log-final">
+                    {combatLog.map((entry, i) => (
+                        <p key={i}>{entry}</p>
+                    ))}
+                </div>
             </div>
         );
     }
 
-    if (teamMembers.every(v => v.stats.hp <= 0)) {
+    if (gameState === 'DEFEAT') {
         return (
             <div className="defeat-screen">
-                <h1>Défaite… Votre équipe est anéantie.</h1>
+                <h1>💀 Défaite ! Votre équipe est anéantie !</h1>
                 <h2>Journal de combat :</h2>
-                <ul>
-                    {combatLog.map((entry, i) => <li key={i}>{entry}</li>)}
-                </ul>
+                <div className="combat-log-final">
+                    {combatLog.map((entry, i) => (
+                        <p key={i}>{entry}</p>
+                    ))}
+                </div>
             </div>
         );
     }
+
+    const currentHero = getCurrentHero();
+    const aliveHeroes = getAliveHeroes();
 
     return (
         <div className="battle-container">
+            {/* Debug info */}
+            <div style={{ background: '#f0f0f0', padding: '10px', margin: '10px 0', fontSize: '12px' }}>
+                <strong>Debug:</strong><br />
+                État: {gameState}<br />
+                Animation: {isAnimating.toString()}<br />
+                Héros actuel: {currentHero?.name || 'Aucun'}<br />
+                Index héros: {currentHeroIndex}<br />
+                Héros vivants: {aliveHeroes.map(h => h.name).join(', ')}<br />
+                MonsterHP: {monster.stats.hp}
+            </div>
+
+            {/* Monstre */}
             <div className="monster-section">
                 <h1>Combat contre : {monster.name}</h1>
                 <div className="health-bar">
                     <div
                         className="health-fill"
-                        style={{ width: `${(monster.stats.hp / monsters['dragon'].stats.hp) * 100}%` }}
+                        style={{ width: `${Math.max(0, (monster.stats.hp / monsters['dragon'].stats.hp) * 100)}%` }}
                     ></div>
                     <span className="health-text">
-                        HP: {monster.stats.hp} / {monsters['dragon'].stats.hp}
+                        HP: {Math.max(0, monster.stats.hp)} / {monsters['dragon'].stats.hp}
                     </span>
                 </div>
             </div>
 
+            {/* Équipe */}
             <div className="team-section">
                 <h2>Votre équipe :</h2>
                 <div className="team-members">
                     {teamMembers.map(v => (
                         <div
                             key={v.id}
-                            className={`villager-card ${v.id === currentVillager?.id ? 'active-turn' : ''}`}
+                            className={`villager-card ${currentHero && v.id === currentHero.id && gameState === 'HERO_TURN' ? 'active-turn' : ''
+                                } ${v.stats.hp <= 0 ? 'dead' : ''}`}
                         >
-                            <h3>{v.name}</h3>
+                            <h3>
+                                {v.name}
+                                {currentHero && v.id === currentHero.id && gameState === 'HERO_TURN' && (
+                                    <span> 👈 (Tour actuel)</span>
+                                )}
+                                {v.stats.hp <= 0 && <span> 💀</span>}
+                            </h3>
                             <div className="health-bar">
                                 <div
                                     className="health-fill"
-                                    style={{ width: `${(v.stats.hp / 100) * 100}%` }}
+                                    style={{ width: `${Math.max(0, Math.min(100, v.stats.hp))}%` }}
                                 ></div>
-                                <span className="health-text">HP: {v.stats.hp}</span>
+                                <span className="health-text">HP: {Math.max(0, v.stats.hp)}</span>
                             </div>
-                            {v.status?.length > 0 && (
-                                <div className="status-effects">
-                                    {v.status.map((s, i) => (
-                                        <span key={i} className="status-badge">⚠️</span>
-                                    ))}
-                                </div>
-                            )}
                         </div>
                     ))}
                 </div>
             </div>
 
+            {/* Actions */}
             <div className="action-section">
-                {currentVillager && awaitingAction && currentVillager.stats.hp > 0 && (
-                    <ActionDropdown
-                        attacker={currentVillager}
-                        onSelect={onHeroAction}
-                    />
+                {gameState === 'HERO_TURN' && currentHero && !isAnimating && (
+                    <div>
+                        <h3>Tour de {currentHero.name}</h3>
+                        <ActionDropdown
+                            attacker={currentHero}
+                            onSelect={handleHeroAction}
+                            disabled={isAnimating}
+                        />
+                    </div>
                 )}
 
-                {turnIndex === teamMembers.length && awaitingAction && (
+                {gameState === 'MONSTER_TURN' && (
                     <div className="monster-turn-indicator">
-                        <p>Le {monster.name} prépare son attaque...</p>
-                        <div className="spinner"></div>
+                        <h3>Tour du {monster.name}</h3>
+                        <p>Le monstre prépare son attaque...</p>
+                    </div>
+                )}
+
+                {isAnimating && (
+                    <div className="waiting-indicator">
+                        <p>⏳ Action en cours...</p>
                     </div>
                 )}
             </div>
 
+            {/* Journal de combat */}
             <div className="combat-log">
                 <h3>Journal de combat :</h3>
-                <ul>
-                    {combatLog.slice(-5).map((entry, i) => (
-                        <li key={i}>{entry}</li>
+                <div className="combat-info">
+                    <p>
+                        <strong>Phase actuelle:</strong> {
+                            gameState === 'HERO_TURN' ? `Tour de ${currentHero?.name || 'Héros'}` :
+                                gameState === 'MONSTER_TURN' ? `Tour du ${monster.name}` :
+                                    'Fin de combat'
+                        }
+                    </p>
+                    <p>
+                        <strong>Héros vivants:</strong> {aliveHeroes.map(h => h.name).join(', ')}
+                    </p>
+                </div>
+                <div className="log-entries">
+                    {combatLog.slice(-8).map((entry, i) => (
+                        <p key={combatLog.length - 8 + i}>{entry}</p>
                     ))}
-                </ul>
+                </div>
             </div>
         </div>
     );

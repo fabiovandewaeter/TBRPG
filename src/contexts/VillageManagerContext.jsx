@@ -15,7 +15,6 @@ export const VillageManagerContext = createContext();
  */
 export const VillageManagerProvider = ({ children, initialState }) => {
     const { resources, getByCategory, consume } = useContext(ResourceContext);
-    //const { villagers, killVillager } = useContext(VillagerContext);
     const { villagers, killVillager } = useContext(VillagerContext);
     const [timeLeft, setTimeLeft] = useState(initialState?.timeLeft || FOOD_CONSUMPTION_INTERVAL);
 

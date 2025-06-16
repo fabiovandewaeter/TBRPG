@@ -5,7 +5,7 @@ import Timer from '../components/Timer';
 import { ResourceContext } from '../contexts/ResourceContext';
 
 const VillagePage = () => {
-    const { villagers, addVillager } = useContext(VillagerContext);
+    const { villagers, deadVillagers, addVillager } = useContext(VillagerContext);
     const { resources } = useContext(ResourceContext);
 
     // Ensure at least one villager exists on first mount only
@@ -25,8 +25,12 @@ const VillagePage = () => {
             <Timer text={"⏳Time before feeding the villagers :"} />
             <button onClick={addVillager}>add Villager</button>
             <div className="villagers-list">
-                <h2>Villagers</h2>
+                <h2>😊 Villagers</h2>
                 {villagers.map((v, index) => (
+                    <VillageInfo key={v.id ?? index} villager={v} />
+                ))}
+                <h2>☠️ Dead villagers</h2>
+                {deadVillagers.map((v, index) => (
                     <VillageInfo key={v.id ?? index} villager={v} />
                 ))}
             </div>

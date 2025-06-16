@@ -65,7 +65,6 @@ function reducer(state, action) {
             };
         }
         case 'ATTACK_VILLAGER': {
-            console.log(action);
             const { attackerId, targetId, attackName } = action;
             const attacker = state.villagers.find(v => v.id === attackerId);
             const target = state.villagers.find(v => v.id === targetId);
@@ -107,6 +106,31 @@ function reducer(state, action) {
                 deadVillagers: updatedDead
             };
         }
+        case 'MONSTER_ATTACK_VILLAGER': {
+            const { targetId, damage } = action;
+            const target = state.villagers.find(v => v.id === targetId);
+            if (!target) return state;
+
+            const newHp = target.stats.hp - damage;
+            let updatedVillagers = state.villagers.map(v =>
+                v.id === targetId
+                    ? { ...v, stats: { ...v.stats, hp: Math.max(newHp, 0) } }
+                    : v
+            );
+
+            let updatedDead = state.deadVillagers;
+            if (newHp <= 0) {
+                const killed = updatedVillagers.find(v => v.id === targetId);
+                updatedVillagers = updatedVillagers.filter(v => v.id !== targetId);
+                updatedDead = [...state.deadVillagers, killed];
+            }
+
+            return {
+                ...state,
+                villagers: updatedVillagers,
+                deadVillagers: updatedDead
+            };
+        }
         default:
             return state;
     }
@@ -138,6 +162,8 @@ export const VillagerProvider = ({ children, initialState }) => {
     const killVillager = useCallback(id => dispatch({ type: 'KILL_VILLAGER', villagerId: id }), []);
     const attackVillager = useCallback((attackerId, targetId, attackName = 'basic') =>
         dispatch({ type: 'ATTACK_VILLAGER', attackerId, targetId, attackName }), []);
+    const monsterAttackVillager = useCallback((targetId, damage) =>
+        dispatch({ type: 'MONSTER_ATTACK_VILLAGER', targetId, damage }), []);
 
     return (
         <VillagerContext.Provider
@@ -150,6 +176,7 @@ export const VillagerProvider = ({ children, initialState }) => {
                 gainXp,
                 killVillager,
                 attackVillager,
+                monsterAttackVillager,
             }}
         >
             {children}

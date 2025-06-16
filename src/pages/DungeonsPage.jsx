@@ -1,4 +1,4 @@
-import { useTeam } from '../contexts/TeamContext';
+import { TEAM_SIZE, useTeam } from '../contexts/TeamContext';
 import { useNavigate } from 'react-router-dom';
 import TeamChoice from '../components/TeamChoice';
 
@@ -12,7 +12,7 @@ const DungeonsPage = () => {
 
     return (
         <div>
-            <h1>Choisissez votre équipe (5 max)</h1>
+            <h1>Choisissez votre équipe ({TEAM_SIZE} max)</h1>
             <TeamChoice />
 
             <button disabled={team.length === 0} onClick={startBattle}>
