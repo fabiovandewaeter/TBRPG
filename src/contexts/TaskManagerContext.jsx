@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ResourceContext } from './ResourceContext';
 import { VillagerContext } from './VillagerContext';
 import { getCombatTaskHandlers } from '../data/tasks/combatTasks';
@@ -8,9 +8,16 @@ import { getLevel } from '../utils/entityUtils';
 
 export const TaskManagerContext = createContext();
 
-export const TaskManagerProvider = ({ children }) => {
+export const TaskManagerProvider = ({ children, initialState }) => {
+    const [unlockedCombatTasks, setUnlockedCombatTasks] = useState(initialState?.unlockedCombatTasks || []);
     const { collect } = useContext(ResourceContext);
     const { villagers, gainXp } = useContext(VillagerContext);
+
+    const unlockCombatTask = useCallback((taskId) => {
+        setUnlockedCombatTasks(prev =>
+            prev.includes(taskId) ? prev : [...prev, taskId]
+        );
+    }, []);
 
     const timersRef = useRef({});
     const taskHandlers = useMemo(() => [
@@ -72,7 +79,7 @@ export const TaskManagerProvider = ({ children }) => {
     }, [villagers, taskHandlers]);
 
     return (
-        <TaskManagerContext.Provider value={{}}>
+        <TaskManagerContext.Provider value={{ unlockedCombatTasks, unlockCombatTask }}>
             {children}
         </TaskManagerContext.Provider>
     );

@@ -5,6 +5,7 @@ import ActionDropdown from '../components/ActionDropdown';
 import AttackSystem from '../systems/attackSystem';
 import { useParams } from 'react-router-dom';
 import { getDungeonList } from '../data/dungeons';
+import { TaskManagerContext } from '../contexts/TaskManagerContext';
 
 const BattlePage = () => {
     const { dungeonId } = useParams();
@@ -12,6 +13,8 @@ const BattlePage = () => {
     const { villagers, monsterAttackVillager } = useContext(VillagerContext);
     const { team } = useTeam();
     const teamMembers = villagers.filter(v => team.includes(v.id));
+
+    const { unlockCombatTask } = useContext(TaskManagerContext);
 
     // État du boss 
     const [boss, setBoss] = useState({
@@ -49,6 +52,7 @@ const BattlePage = () => {
         if (boss.stats.hp <= 0) {
             setIsGameEnding(true);
             setGameState('VICTORY');
+            unlockCombatTask(dungeonId);
             return true;
         }
         if (getAliveHeroes().length === 0) {
@@ -57,7 +61,7 @@ const BattlePage = () => {
             return true;
         }
         return false;
-    }, [boss.stats.hp, getAliveHeroes, isGameEnding]);
+    }, [boss.stats.hp, getAliveHeroes, isGameEnding, unlockCombatTask]);
 
     // Passer au héros suivant ou au monstre
     const nextTurn = useCallback(() => {
@@ -101,6 +105,7 @@ const BattlePage = () => {
             setIsGameEnding(true);
             setTimeout(() => {
                 setGameState('VICTORY');
+                unlockCombatTask(dungeonId);
                 setIsAnimating(false);
             }, 50);
             return;
@@ -111,7 +116,7 @@ const BattlePage = () => {
             setIsAnimating(false);
             nextTurn();
         }, 50);
-    }, [gameState, isAnimating, isGameEnding, getCurrentHero, boss, nextTurn]);
+    }, [gameState, isAnimating, isGameEnding, getCurrentHero, boss, nextTurn, unlockCombatTask]);
 
     // Gestion du tour du boss - VERSION AMÉLIORÉE
     useEffect(() => {

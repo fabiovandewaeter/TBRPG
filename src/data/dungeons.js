@@ -7,10 +7,12 @@ export const getDungeonList = () => {
         {
             zone: zones["softgrass_field"],
             baseInterval: 1000,
+            loot: [],
         },
         {
             zone: zones["hollow_thicket"],
             baseInterval: 3000,
+            loot: [],
         }
     ];
 

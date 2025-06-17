@@ -6,7 +6,7 @@ import MiningTasksPage from './pages/MiningTasksPage';
 import FarmingTasksPage from './pages/FarmingTasksPage';
 import StatsPage from './pages/StatsPage';
 import { VillagerProvider } from './contexts/VillagerContext';
-import { TaskManagerProvider } from './contexts/TaskManagerContext';
+import { TaskManagerContext, TaskManagerProvider } from './contexts/TaskManagerContext';
 import { VillageManagerProvider } from './contexts/VillageManagerContext';
 import { SaveProvider, useSave } from './contexts/SaveContext';
 import { useContext, useEffect, useState } from 'react';
@@ -23,6 +23,7 @@ function SaveManager() {
   const { resources } = useContext(ResourceContext);
   const { villagers, deadVillagers } = useContext(VillagerContext);
   const { timeLeft } = useContext(VillageManagerContext);
+  const { unlockedCombatTasks } = useContext(TaskManagerContext);
 
   // Sauvegarder les états dans localStorage pour l'export
   useEffect(() => {
@@ -32,16 +33,18 @@ function SaveManager() {
       deadVillagers
     }));
     localStorage.setItem('villageManager_state', JSON.stringify({ timeLeft }));
-  }, [resources, villagers, deadVillagers, timeLeft]);
+    localStorage.setItem('taskManager_state', JSON.stringify({ unlockedCombatTasks }));
+  }, [resources, villagers, deadVillagers, timeLeft, unlockedCombatTasks]);
 
   useEffect(() => {
     const saveData = {
       resources,
       villagers: { villagers, deadVillagers },
-      villageManager: { timeLeft }
+      villageManager: { timeLeft },
+      taskManager: { unlockedCombatTasks },
     };
     saveGame(saveData);
-  }, [resources, villagers, deadVillagers, timeLeft]);
+  }, [resources, villagers, deadVillagers, timeLeft, unlockedCombatTasks]);
 
   return null;
 }
@@ -61,7 +64,7 @@ function AppContent() {
         deadVillagers: saveData?.villagers?.deadVillagers || []
       }}>
         <VillageManagerProvider initialState={saveData?.villageManager}>
-          <TaskManagerProvider>
+          <TaskManagerProvider initialState={saveData?.taskManager}>
             <TeamProvider>
               <BrowserRouter basename="/TBRPG">
                 <SaveManager />
