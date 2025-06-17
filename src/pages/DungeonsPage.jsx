@@ -7,12 +7,14 @@ import { getDungeonList } from '../data/dungeons';
 const DungeonsPage = () => {
     const { team, clearTeam } = useTeam();
     const navigate = useNavigate();
-    const [selectedDungeon, setSelectedDungeon] = useState("UNKNOWN");
+    const [selectedDungeon, setSelectedDungeon] = useState();
 
     const dungeons = getDungeonList();
 
     const startBattle = () => {
-        navigate(`/battle/${selectedDungeon}`);
+        if (selectedDungeon) {
+            navigate(`/battle/${selectedDungeon}`);
+        }
     };
 
     return (
@@ -21,7 +23,7 @@ const DungeonsPage = () => {
             <TeamChoice />
 
             <h2>Sélectionnez un donjon</h2>
-            <p>Current: {selectedDungeon}</p>
+            <p>Current: {selectedDungeon ? selectedDungeon : "no dungeon selected"}</p>
             <div className="dungeon-buttons">
                 {dungeons.map(dungeon => (
                     <button key={dungeon.id} onClick={() => setSelectedDungeon(dungeon.id)}>{dungeon.displayName}</button>

@@ -9,7 +9,6 @@ import { getDungeonList } from '../data/dungeons';
 const BattlePage = () => {
     const { dungeonId } = useParams();
     const dungeon = getDungeonList().find(d => d.id === dungeonId);
-    console.log(dungeonId, getDungeonList(), dungeon);
     const { villagers, monsterAttackVillager } = useContext(VillagerContext);
     const { team } = useTeam();
     const teamMembers = villagers.filter(v => team.includes(v.id));
@@ -111,7 +110,7 @@ const BattlePage = () => {
         setTimeout(() => {
             setIsAnimating(false);
             nextTurn();
-        }, 500);
+        }, 50);
     }, [gameState, isAnimating, isGameEnding, getCurrentHero, boss, nextTurn]);
 
     // Gestion du tour du boss - VERSION AMÉLIORÉE
