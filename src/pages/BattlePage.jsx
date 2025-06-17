@@ -25,6 +25,8 @@ const BattlePage = () => {
     const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
     const [combatLog, setCombatLog] = useState([]);
     const [isAnimating, setIsAnimating] = useState(false);
+    // Nouvel état pour éviter le flash
+    const [isGameEnding, setIsGameEnding] = useState(false);
 
     // Obtenir les héros vivants
     const getAliveHeroes = useCallback(() => {
@@ -40,18 +42,23 @@ const BattlePage = () => {
         return aliveHeroes[currentHeroIndex];
     }, [getAliveHeroes, currentHeroIndex]);
 
-    // Vérifier les conditions de fin
+    // Vérifier les conditions de fin - VERSION AMÉLIORÉE
     const checkGameEnd = useCallback(() => {
+        // Éviter les vérifications multiples
+        if (isGameEnding) return false;
+
         if (boss.stats.hp <= 0) {
+            setIsGameEnding(true);
             setGameState('VICTORY');
             return true;
         }
         if (getAliveHeroes().length === 0) {
+            setIsGameEnding(true);
             setGameState('DEFEAT');
             return true;
         }
         return false;
-    }, [boss.stats.hp, getAliveHeroes]);
+    }, [boss.stats.hp, getAliveHeroes, isGameEnding]);
 
     // Passer au héros suivant ou au monstre
     const nextTurn = useCallback(() => {
@@ -71,9 +78,9 @@ const BattlePage = () => {
         }
     }, [checkGameEnd, getAliveHeroes, currentHeroIndex]);
 
-    // Action du héros
+    // Action du héros - VERSION AMÉLIORÉE
     const handleHeroAction = useCallback((actionName) => {
-        if (gameState !== 'HERO_TURN' || isAnimating) return;
+        if (gameState !== 'HERO_TURN' || isAnimating || isGameEnding) return;
 
         const currentHero = getCurrentHero();
         if (!currentHero || currentHero.stats.hp <= 0) return;
@@ -90,16 +97,26 @@ const BattlePage = () => {
         setCombatLog(prev => [...prev, `${currentHero.displayName} utilise ${actionName} et inflige ${damage} dégâts!`]);
         setBoss(updatedBoss);
 
+        // Vérifier immédiatement si le boss est mort
+        if (updatedBoss.stats.hp <= 0) {
+            setIsGameEnding(true);
+            setTimeout(() => {
+                setGameState('VICTORY');
+                setIsAnimating(false);
+            }, 50);
+            return;
+        }
+
         // Passer au tour suivant après animation
         setTimeout(() => {
             setIsAnimating(false);
             nextTurn();
         }, 500);
-    }, [gameState, isAnimating, getCurrentHero, boss, nextTurn]);
+    }, [gameState, isAnimating, isGameEnding, getCurrentHero, boss, nextTurn]);
 
-    // Gestion du tour du boss
+    // Gestion du tour du boss - VERSION AMÉLIORÉE
     useEffect(() => {
-        if (gameState !== 'BOSS_TURN' || isAnimating) return;
+        if (gameState !== 'BOSS_TURN' || isAnimating || isGameEnding) return;
 
         const executeBossTurn = () => {
             if (checkGameEnd()) return;
@@ -108,6 +125,7 @@ const BattlePage = () => {
 
             const aliveHeroes = getAliveHeroes();
             if (aliveHeroes.length === 0) {
+                setIsGameEnding(true);
                 setGameState('DEFEAT');
                 setIsAnimating(false);
                 return;
@@ -120,10 +138,17 @@ const BattlePage = () => {
             monsterAttackVillager(target.id, damage);
             setCombatLog(prev => [...prev, `${boss.displayName} attaque ${target.displayName} et inflige ${damage} dégâts!`]);
 
-            // Retourner aux tours des héros après animation
+            // Vérifier immédiatement si tous les héros sont morts
+            // Note: on doit vérifier après que monsterAttackVillager ait été appliqué
             setTimeout(() => {
-                setIsAnimating(false);
-                if (!checkGameEnd()) {
+                const remainingAliveHeroes = getAliveHeroes();
+                if (remainingAliveHeroes.length === 0) {
+                    setIsGameEnding(true);
+                    setGameState('DEFEAT');
+                    setIsAnimating(false);
+                } else {
+                    // Retourner aux tours des héros après animation
+                    setIsAnimating(false);
                     setCurrentHeroIndex(0);
                     setGameState('HERO_TURN');
                 }
@@ -133,20 +158,17 @@ const BattlePage = () => {
         // Délai avant l'attaque du boss pour l'effet dramatique
         const timer = setTimeout(executeBossTurn, 1000);
         return () => clearTimeout(timer);
-    }, [gameState, isAnimating, checkGameEnd, getAliveHeroes, boss, monsterAttackVillager]);
-
-    // Vérification périodique des conditions de fin
-    useEffect(() => {
-        checkGameEnd();
-    }, [boss.stats.hp, teamMembers, checkGameEnd]);
+    }, [gameState, isAnimating, isGameEnding, checkGameEnd, getAliveHeroes, boss, monsterAttackVillager]);
 
     // Réinitialiser l'index du héros si nécessaire
     useEffect(() => {
+        if (isGameEnding) return; // Ne pas ajuster pendant la fin de jeu
+
         const aliveHeroes = getAliveHeroes();
         if (currentHeroIndex >= aliveHeroes.length && aliveHeroes.length > 0) {
             setCurrentHeroIndex(0);
         }
-    }, [getAliveHeroes, currentHeroIndex]);
+    }, [getAliveHeroes, currentHeroIndex, isGameEnding]);
 
     // Écrans de fin
     if (gameState === 'VICTORY') {
@@ -187,6 +209,7 @@ const BattlePage = () => {
                 <strong>Debug:</strong><br />
                 État: {gameState}<br />
                 Animation: {isAnimating.toString()}<br />
+                Fin de jeu: {isGameEnding.toString()}<br />
                 Héros actuel: {currentHero?.displayName || 'Aucun'}<br />
                 Index héros: {currentHeroIndex}<br />
                 Héros vivants: {aliveHeroes.map(h => h.displayName).join(', ')}<br />
@@ -219,7 +242,7 @@ const BattlePage = () => {
                         >
                             <h3>
                                 {v.displayName}
-                                {currentHero && v.id === currentHero.id && gameState === 'HERO_TURN' && (
+                                {currentHero && v.id === currentHero.id && gameState === 'HERO_TURN' && !isGameEnding && (
                                     <span> 👈 (Tour actuel)</span>
                                 )}
                                 {v.stats.hp <= 0 && <span> 💀</span>}
@@ -238,27 +261,27 @@ const BattlePage = () => {
 
             {/* Actions */}
             <div className="action-section">
-                {gameState === 'HERO_TURN' && currentHero && !isAnimating && (
+                {gameState === 'HERO_TURN' && currentHero && !isAnimating && !isGameEnding && (
                     <div>
                         <h3>Tour de {currentHero.displayName}</h3>
                         <ActionDropdown
                             attacker={currentHero}
                             onSelect={handleHeroAction}
-                            disabled={isAnimating}
+                            disabled={isAnimating || isGameEnding}
                         />
                     </div>
                 )}
 
-                {gameState === 'BOSS_TURN' && (
+                {gameState === 'BOSS_TURN' && !isGameEnding && (
                     <div className="boss-turn-indicator">
                         <h3>Tour du {boss.displayName}</h3>
                         <p>Le boss prépare son attaque...</p>
                     </div>
                 )}
 
-                {isAnimating && (
+                {(isAnimating || isGameEnding) && (
                     <div className="waiting-indicator">
-                        <p>⏳ Action en cours...</p>
+                        <p>⏳ {isGameEnding ? 'Combat terminé...' : 'Action en cours...'}</p>
                     </div>
                 )}
             </div>
@@ -269,9 +292,10 @@ const BattlePage = () => {
                 <div className="combat-info">
                     <p>
                         <strong>Phase actuelle:</strong> {
-                            gameState === 'HERO_TURN' ? `Tour de ${currentHero?.displayName || 'Héros'}` :
-                                gameState === 'BOSS_TURN' ? `Tour du ${boss.displayName}` :
-                                    'Fin de combat'
+                            isGameEnding ? 'Fin de combat' :
+                                gameState === 'HERO_TURN' ? `Tour de ${currentHero?.displayName || 'Héros'}` :
+                                    gameState === 'BOSS_TURN' ? `Tour du ${boss.displayName}` :
+                                        'Fin de combat'
                         }
                     </p>
                     <p>
