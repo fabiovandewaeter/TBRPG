@@ -1,4 +1,3 @@
-import { monsters } from "../monsters";
 import { zones } from "../zones";
 
 const TASK_TYPE = "combat";

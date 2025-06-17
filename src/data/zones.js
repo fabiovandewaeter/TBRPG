@@ -1,4 +1,4 @@
-import { monsters } from "./monsters";
+import { monsters } from "./entities/monsters";
 
 export const zones = {
     softgrass_field: {

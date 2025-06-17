@@ -1,4 +1,4 @@
-import { attacks } from '../data/attacks';
+import { attacks } from '../data//entities/attacks';
 import { calculateCombatStats } from '../utils/entityUtils';
 
 const AttackSystem = {

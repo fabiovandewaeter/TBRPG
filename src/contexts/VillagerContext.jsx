@@ -1,8 +1,8 @@
 import React, { createContext, useReducer, useCallback, useEffect } from 'react';
 import { weapons } from '../data/weapons';
-import { attacks } from '../data/attacks';
-import { races } from '../data/races';
-import { classes } from '../data/classes';
+import { attacks } from '../data/entities/attacks';
+import { races } from '../data/entities/races';
+import { classes } from '../data/entities/classes';
 
 export const VillagerContext = createContext();
 
