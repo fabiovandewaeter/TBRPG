@@ -5,7 +5,7 @@ const VillageInfo = ({ villager }) => {
 
     return (
         <div className="villager-info">
-            <h3>{villager.name}</h3>
+            <h3>{villager.displayName}</h3>
             {TASK_TYPES.map((task_type) => (
                 <XpBar key={task_type} xp={villager.xp} taskType={task_type} />
             ))}

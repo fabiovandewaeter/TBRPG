@@ -1,6 +1,6 @@
 export const monsters = {
     slime: {
-        name: "slime",
+        id: "slime",
         displayName: "Slime",
         icon: "👾",
         stats: { hp: 20, maxHp: 20, attack: 7, defense: 2 },
@@ -8,7 +8,7 @@ export const monsters = {
         actions: []
     },
     wolf: {
-        name: "wolf",
+        id: "wolf",
         displayName: "Wolf",
         icon: "👾",
         stats: { hp: 35, maxHp: 35, attack: 12, defense: 5 },
@@ -16,7 +16,7 @@ export const monsters = {
         actions: []
     },
     dragon: {
-        name: "dragon",
+        id: "dragon",
         displayName: "Dragon",
         icon: "👾",
         stats: { hp: 5000, maxHp: 5000, attack: 100, defense: 50 },

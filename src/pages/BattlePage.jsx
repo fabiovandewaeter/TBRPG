@@ -1,6 +1,6 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+import { useContext, useState, useEffect, useCallback } from 'react';
 import { VillagerContext } from '../contexts/VillagerContext';
-import { TEAM_SIZE, useTeam } from '../contexts/TeamContext';
+import { useTeam } from '../contexts/TeamContext';
 import { monsters } from '../data/monsters';
 import ActionDropdown from '../components/ActionDropdown';
 import AttackSystem from '../systems/attackSystem';
@@ -83,7 +83,7 @@ const BattlePage = () => {
         AttackSystem.applyAttack(currentHero, updatedMonster, actionName);
         const damage = initialHp - updatedMonster.stats.hp;
 
-        setCombatLog(prev => [...prev, `${currentHero.name} utilise ${actionName} et inflige ${damage} dégâts!`]);
+        setCombatLog(prev => [...prev, `${currentHero.displayName} utilise ${actionName} et inflige ${damage} dégâts!`]);
         setMonster(updatedMonster);
 
         // Passer au tour suivant après animation
@@ -114,7 +114,7 @@ const BattlePage = () => {
             const damage = AttackSystem.calculateDamage(monster, target, 'basic');
 
             monsterAttackVillager(target.id, damage);
-            setCombatLog(prev => [...prev, `${monster.name} attaque ${target.name} et inflige ${damage} dégâts!`]);
+            setCombatLog(prev => [...prev, `${monster.displayName} attaque ${target.displayName} et inflige ${damage} dégâts!`]);
 
             // Retourner aux tours des héros après animation
             setTimeout(() => {
@@ -148,7 +148,7 @@ const BattlePage = () => {
     if (gameState === 'VICTORY') {
         return (
             <div className="victory-screen">
-                <h1>🎉 Victoire ! Le {monster.name} est vaincu !</h1>
+                <h1>🎉 Victoire ! Le {monster.displayName} est vaincu !</h1>
                 <h2>Journal de combat :</h2>
                 <div className="combat-log-final">
                     {combatLog.map((entry, i) => (
@@ -183,15 +183,15 @@ const BattlePage = () => {
                 <strong>Debug:</strong><br />
                 État: {gameState}<br />
                 Animation: {isAnimating.toString()}<br />
-                Héros actuel: {currentHero?.name || 'Aucun'}<br />
+                Héros actuel: {currentHero?.displayName || 'Aucun'}<br />
                 Index héros: {currentHeroIndex}<br />
-                Héros vivants: {aliveHeroes.map(h => h.name).join(', ')}<br />
+                Héros vivants: {aliveHeroes.map(h => h.displayName).join(', ')}<br />
                 MonsterHP: {monster.stats.hp}
             </div>
 
             {/* Monstre */}
             <div className="monster-section">
-                <h1>Combat contre : {monster.name}</h1>
+                <h1>Combat contre : {monster.displayName}</h1>
                 <div className="health-bar">
                     <div
                         className="health-fill"
@@ -214,7 +214,7 @@ const BattlePage = () => {
                                 } ${v.stats.hp <= 0 ? 'dead' : ''}`}
                         >
                             <h3>
-                                {v.name}
+                                {v.displayName}
                                 {currentHero && v.id === currentHero.id && gameState === 'HERO_TURN' && (
                                     <span> 👈 (Tour actuel)</span>
                                 )}
@@ -236,7 +236,7 @@ const BattlePage = () => {
             <div className="action-section">
                 {gameState === 'HERO_TURN' && currentHero && !isAnimating && (
                     <div>
-                        <h3>Tour de {currentHero.name}</h3>
+                        <h3>Tour de {currentHero.displayName}</h3>
                         <ActionDropdown
                             attacker={currentHero}
                             onSelect={handleHeroAction}
@@ -247,7 +247,7 @@ const BattlePage = () => {
 
                 {gameState === 'MONSTER_TURN' && (
                     <div className="monster-turn-indicator">
-                        <h3>Tour du {monster.name}</h3>
+                        <h3>Tour du {monster.displayName}</h3>
                         <p>Le monstre prépare son attaque...</p>
                     </div>
                 )}
@@ -265,13 +265,13 @@ const BattlePage = () => {
                 <div className="combat-info">
                     <p>
                         <strong>Phase actuelle:</strong> {
-                            gameState === 'HERO_TURN' ? `Tour de ${currentHero?.name || 'Héros'}` :
-                                gameState === 'MONSTER_TURN' ? `Tour du ${monster.name}` :
+                            gameState === 'HERO_TURN' ? `Tour de ${currentHero?.displayName || 'Héros'}` :
+                                gameState === 'MONSTER_TURN' ? `Tour du ${monster.displayName}` :
                                     'Fin de combat'
                         }
                     </p>
                     <p>
-                        <strong>Héros vivants:</strong> {aliveHeroes.map(h => h.name).join(', ')}
+                        <strong>Héros vivants:</strong> {aliveHeroes.map(h => h.displayName).join(', ')}
                     </p>
                 </div>
                 <div className="log-entries">

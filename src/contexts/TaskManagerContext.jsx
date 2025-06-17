@@ -23,7 +23,7 @@ export const TaskManagerProvider = ({ children }) => {
         villagers.forEach(v => {
             const currentTimer = timersRef.current[v.id];
             const taskName = v.currentTask;
-            const handler = taskHandlers.find(h => h.name === taskName);
+            const handler = taskHandlers.find(h => h.id === taskName);
 
             // Calculer le niveau actuel pour cette tâche
             const xpForTask = v.xp?.[handler?.task_type] || 0;

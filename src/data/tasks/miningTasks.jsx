@@ -6,7 +6,8 @@ const ICON = "⛏️";
 export const getMiningTaskHandlers = (collectFunction, gainXpFunction) => {
     return [
         {
-            name: "stone",
+            id: "stone",
+            displayName: "Stone",
             item: items["stone"],
             task_type: TASK_TYPE,
             baseInterval: 1000,
@@ -17,7 +18,8 @@ export const getMiningTaskHandlers = (collectFunction, gainXpFunction) => {
             }
         },
         {
-            name: "iron",
+            id: "iron",
+            displayName: "Iron",
             item: items["iron"],
             task_type: TASK_TYPE,
             baseInterval: 3000,

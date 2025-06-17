@@ -3,7 +3,7 @@ import { attacks } from '../data/attacks';
 
 /**
  * Dropdown pour choisir l’action (attaque) d’un villageois.
- * - props.attacker : villager { id, name, stats, equipment }
+ * - props.attacker : villager { id, displayName, stats, equipment }
  * - props.onSelect(actionName) : callback quand on choisit
  */
 const ActionDropdown = ({ attacker, onSelect }) => {
@@ -20,7 +20,7 @@ const ActionDropdown = ({ attacker, onSelect }) => {
     return (
         <div style={{ margin: '1em 0' }}>
             <label>
-                {attacker.name} choisit :
+                {attacker.displayName} choisit :
                 <select defaultValue="" onChange={handleChange}>
                     <option value="">-- Choisir action --</option>
                     {options.map(opt => (

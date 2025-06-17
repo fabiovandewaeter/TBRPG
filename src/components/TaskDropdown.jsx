@@ -16,7 +16,7 @@ const TaskDropdown = ({ taskType, taskName, icon, displayName }) => {
     // Build list: all villagers not on any task, plus currently selected
     const options = villagers
         .filter(v => !v.currentTask || v.currentTask === taskName)
-        .map(v => ({ id: v.id, name: v.name }));
+        .map(v => ({ id: v.id, displayName: v.displayName }));
 
     const handleChange = e => {
         const newId = e.target.value;
@@ -38,7 +38,7 @@ const TaskDropdown = ({ taskType, taskName, icon, displayName }) => {
                 <select value={selectedVillager ? selectedVillager.id : ''} onChange={handleChange}>
                     <option value="">-- None --</option>
                     {options.map(opt => (
-                        <option key={opt.id} value={opt.id}>{opt.name}</option>
+                        <option key={opt.id} value={opt.id}>{opt.displayName}</option>
                     ))}
                 </select>
             </div>

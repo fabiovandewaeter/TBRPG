@@ -28,7 +28,7 @@ const TeamChoice = () => {
                 </option>
                 {availableOptions.map(v => (
                     <option key={v.id} value={v.id}>
-                        {v.name}
+                        {v.displayName}
                     </option>
                 ))}
             </select>
@@ -37,7 +37,7 @@ const TeamChoice = () => {
                 <ul>
                     {teamMembers.map(v => (
                         <li key={v.id}>
-                            {v.name}
+                            {v.displayName}
                             <button onClick={() => toggleVillager(v.id)} style={{ marginLeft: '1em' }}>
                                 ❌ Retirer
                             </button>

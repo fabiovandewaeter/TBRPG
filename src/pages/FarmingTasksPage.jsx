@@ -16,8 +16,8 @@ const FarmingPage = () => {
         <div>
             <h1>Farming tasks</h1>
             <div className="tasks">
-                {taskHandlers.map(({ name, item }) => (
-                    <TaskDropdown key={name} taskType={TASK_TYPE} taskName={name} icon={item.icon} displayName={item.displayName} />
+                {taskHandlers.map(({ id, item }) => (
+                    <TaskDropdown key={id} taskType={TASK_TYPE} taskName={id} icon={item.icon} displayName={item.displayName} />
                 ))}
             </div>
         </div>

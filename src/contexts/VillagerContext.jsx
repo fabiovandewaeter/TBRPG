@@ -5,8 +5,8 @@ import { attacks } from '../data/attacks';
 export const VillagerContext = createContext();
 
 const defaultInitialState = {
-    villagers: [],        // { id, name, hp, stats: { attack, defense }, xp, equipment }
-    deadVillagers: []     // même shape que villagers
+    villagers: [],
+    deadVillagers: []
 };
 
 function reducer(state, action) {
@@ -17,8 +17,8 @@ function reducer(state, action) {
             const nextId = Date.now().toString();
             const newVillager = {
                 id: nextId,
-                name: `Villager ${state.villagers.length + state.villagers.length + 1}`,
-                stats: { hp: 100, maxHp: 100, attack: 5, defense: 2 },
+                displayName: `Villager ${state.villagers.length + state.villagers.length + 1}`,
+                stats: { hp: 100, maxHp: 100, attack: 500000, defense: 2 },
                 xp: {},
                 equipment: { mainHand: weapons.sword },
                 currentTask: null,
@@ -64,7 +64,7 @@ function reducer(state, action) {
                 deadVillagers: [...state.deadVillagers, victim],
             };
         }
-        case 'ATTACK_VILLAGER': {
+        case 'VILLAGER_ATTACK_VILLAGER': {
             const { attackerId, targetId, attackName } = action;
             const attacker = state.villagers.find(v => v.id === attackerId);
             const target = state.villagers.find(v => v.id === targetId);
@@ -161,7 +161,7 @@ export const VillagerProvider = ({ children, initialState }) => {
     const gainXp = useCallback((id, type, amt) => dispatch({ type: 'GAIN_XP', villagerId: id, taskType: type, amount: amt }), []);
     const killVillager = useCallback(id => dispatch({ type: 'KILL_VILLAGER', villagerId: id }), []);
     const attackVillager = useCallback((attackerId, targetId, attackName = 'basic') =>
-        dispatch({ type: 'ATTACK_VILLAGER', attackerId, targetId, attackName }), []);
+        dispatch({ type: 'VILLAGER_ATTACK_VILLAGER', attackerId, targetId, attackName }), []);
     const monsterAttackVillager = useCallback((targetId, damage) =>
         dispatch({ type: 'MONSTER_ATTACK_VILLAGER', targetId, damage }), []);
 

@@ -6,7 +6,7 @@ const ICON = "🌱";
 export const getFarmingTaskHandlers = (collectFunction, gainXpFunction) => {
     return [
         {
-            name: "salad",
+            id: "salad",
             item: items["salad"],
             task_type: TASK_TYPE,
             baseInterval: 1000,
@@ -17,7 +17,7 @@ export const getFarmingTaskHandlers = (collectFunction, gainXpFunction) => {
             }
         },
         {
-            name: "wheat",
+            id: "wheat",
             item: items["wheat"],
             task_type: TASK_TYPE,
             baseInterval: 3000,
