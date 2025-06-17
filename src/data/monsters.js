@@ -7,11 +7,27 @@ export const monsters = {
         xpDrop: 100,
         actions: []
     },
+    rabbit: {
+        id: "rabbit",
+        displayName: "Rabbit",
+        icon: "👾",
+        stats: { hp: 10, maxHp: 10, attack: 2, defense: 1 },
+        xpDrop: 100,
+        actions: []
+    },
     wolf: {
         id: "wolf",
         displayName: "Wolf",
         icon: "👾",
         stats: { hp: 35, maxHp: 35, attack: 12, defense: 5 },
+        xpDrop: 100,
+        actions: []
+    },
+    snake: {
+        id: "snake",
+        displayName: "Snake",
+        icon: "👾",
+        stats: { hp: 15, maxHp: 15, attack: 22, defense: 1 },
         xpDrop: 100,
         actions: []
     },
