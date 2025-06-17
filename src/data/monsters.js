@@ -39,4 +39,12 @@ export const monsters = {
         xpDrop: 1000,
         actions: []
     },
+    golem: {
+        id: "golem",
+        displayName: "Golem",
+        icon: "👾",
+        stats: { hp: 3000, maxHp: 3000, attack: 30, defense: 100 },
+        xpDrop: 1000,
+        actions: []
+    },
 };

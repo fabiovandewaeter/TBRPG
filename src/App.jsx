@@ -89,7 +89,7 @@ function AppContent() {
 
                       <Route path="/village" element={<VillagePage />} />
                       <Route path="/dungeons" element={<DungeonsPage />} />
-                      <Route path="/battle" element={<BattlePage />} />
+                      <Route path="/battle/:dungeonId" element={<BattlePage />} />
                       <Route path="/combatTasks" element={<CombatTasksPage />} />
                       <Route path="/mineTasks" element={<MiningTasksPage />} />
                       <Route path="/farmingTasks" element={<FarmingTasksPage />} />

@@ -1,23 +1,27 @@
 import { useContext, useState, useEffect, useCallback } from 'react';
 import { VillagerContext } from '../contexts/VillagerContext';
 import { useTeam } from '../contexts/TeamContext';
-import { monsters } from '../data/monsters';
 import ActionDropdown from '../components/ActionDropdown';
 import AttackSystem from '../systems/attackSystem';
+import { useParams } from 'react-router-dom';
+import { getDungeonList } from '../data/dungeons';
 
 const BattlePage = () => {
+    const { dungeonId } = useParams();
+    const dungeon = getDungeonList().find(d => d.id === dungeonId);
+    console.log(dungeonId, getDungeonList(), dungeon);
     const { villagers, monsterAttackVillager } = useContext(VillagerContext);
     const { team } = useTeam();
     const teamMembers = villagers.filter(v => team.includes(v.id));
 
-    // État du monstre
-    const [monster, setMonster] = useState({
-        ...monsters['dragon'],
-        stats: { ...monsters['dragon'].stats }
+    // État du boss 
+    const [boss, setBoss] = useState({
+        ...dungeon["boss"],
+        stats: { ...dungeon["boss"].stats }
     });
 
     // États de combat simplifiés
-    const [gameState, setGameState] = useState('HERO_TURN'); // 'HERO_TURN', 'MONSTER_TURN', 'VICTORY', 'DEFEAT'
+    const [gameState, setGameState] = useState('HERO_TURN'); // 'HERO_TURN', 'BOSS_TURN', 'VICTORY', 'DEFEAT'
     const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
     const [combatLog, setCombatLog] = useState([]);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -38,7 +42,7 @@ const BattlePage = () => {
 
     // Vérifier les conditions de fin
     const checkGameEnd = useCallback(() => {
-        if (monster.stats.hp <= 0) {
+        if (boss.stats.hp <= 0) {
             setGameState('VICTORY');
             return true;
         }
@@ -47,7 +51,7 @@ const BattlePage = () => {
             return true;
         }
         return false;
-    }, [monster.stats.hp, getAliveHeroes]);
+    }, [boss.stats.hp, getAliveHeroes]);
 
     // Passer au héros suivant ou au monstre
     const nextTurn = useCallback(() => {
@@ -57,9 +61,9 @@ const BattlePage = () => {
         const nextHeroIndex = currentHeroIndex + 1;
 
         if (nextHeroIndex >= aliveHeroes.length) {
-            // Tous les héros ont joué, c'est au tour du monstre
+            // Tous les héros ont joué, c'est au tour du boss 
             setCurrentHeroIndex(0);
-            setGameState('MONSTER_TURN');
+            setGameState('BOSS_TURN');
         } else {
             // Passer au héros suivant
             setCurrentHeroIndex(nextHeroIndex);
@@ -76,28 +80,28 @@ const BattlePage = () => {
 
         setIsAnimating(true);
 
-        // Attaquer le monstre
-        const updatedMonster = { ...monster, stats: { ...monster.stats } };
-        const initialHp = updatedMonster.stats.hp;
+        // Attaquer le boss
+        const updatedBoss = { ...boss, stats: { ...boss.stats } };
+        const initialHp = updatedBoss.stats.hp;
 
-        AttackSystem.applyAttack(currentHero, updatedMonster, actionName);
-        const damage = initialHp - updatedMonster.stats.hp;
+        AttackSystem.applyAttack(currentHero, updatedBoss, actionName);
+        const damage = initialHp - updatedBoss.stats.hp;
 
         setCombatLog(prev => [...prev, `${currentHero.displayName} utilise ${actionName} et inflige ${damage} dégâts!`]);
-        setMonster(updatedMonster);
+        setBoss(updatedBoss);
 
         // Passer au tour suivant après animation
         setTimeout(() => {
             setIsAnimating(false);
             nextTurn();
         }, 500);
-    }, [gameState, isAnimating, getCurrentHero, monster, nextTurn]);
+    }, [gameState, isAnimating, getCurrentHero, boss, nextTurn]);
 
-    // Gestion du tour du monstre
+    // Gestion du tour du boss
     useEffect(() => {
-        if (gameState !== 'MONSTER_TURN' || isAnimating) return;
+        if (gameState !== 'BOSS_TURN' || isAnimating) return;
 
-        const executeMonsterTurn = () => {
+        const executeBossTurn = () => {
             if (checkGameEnd()) return;
 
             setIsAnimating(true);
@@ -111,10 +115,10 @@ const BattlePage = () => {
 
             // Attaquer un héros aléatoire
             const target = aliveHeroes[Math.floor(Math.random() * aliveHeroes.length)];
-            const damage = AttackSystem.calculateDamage(monster, target, 'basic');
+            const damage = AttackSystem.calculateDamage(boss, target, 'basic');
 
             monsterAttackVillager(target.id, damage);
-            setCombatLog(prev => [...prev, `${monster.displayName} attaque ${target.displayName} et inflige ${damage} dégâts!`]);
+            setCombatLog(prev => [...prev, `${boss.displayName} attaque ${target.displayName} et inflige ${damage} dégâts!`]);
 
             // Retourner aux tours des héros après animation
             setTimeout(() => {
@@ -126,15 +130,15 @@ const BattlePage = () => {
             }, 500);
         };
 
-        // Délai avant l'attaque du monstre pour l'effet dramatique
-        const timer = setTimeout(executeMonsterTurn, 1000);
+        // Délai avant l'attaque du boss pour l'effet dramatique
+        const timer = setTimeout(executeBossTurn, 1000);
         return () => clearTimeout(timer);
-    }, [gameState, isAnimating, checkGameEnd, getAliveHeroes, monster, monsterAttackVillager]);
+    }, [gameState, isAnimating, checkGameEnd, getAliveHeroes, boss, monsterAttackVillager]);
 
     // Vérification périodique des conditions de fin
     useEffect(() => {
         checkGameEnd();
-    }, [monster.stats.hp, teamMembers, checkGameEnd]);
+    }, [boss.stats.hp, teamMembers, checkGameEnd]);
 
     // Réinitialiser l'index du héros si nécessaire
     useEffect(() => {
@@ -148,7 +152,7 @@ const BattlePage = () => {
     if (gameState === 'VICTORY') {
         return (
             <div className="victory-screen">
-                <h1>🎉 Victoire ! Le {monster.displayName} est vaincu !</h1>
+                <h1>🎉 Victoire ! Le {boss.displayName} est vaincu !</h1>
                 <h2>Journal de combat :</h2>
                 <div className="combat-log-final">
                     {combatLog.map((entry, i) => (
@@ -186,19 +190,19 @@ const BattlePage = () => {
                 Héros actuel: {currentHero?.displayName || 'Aucun'}<br />
                 Index héros: {currentHeroIndex}<br />
                 Héros vivants: {aliveHeroes.map(h => h.displayName).join(', ')}<br />
-                MonsterHP: {monster.stats.hp}
+                BossHP: {boss.stats.hp}
             </div>
 
-            {/* Monstre */}
-            <div className="monster-section">
-                <h1>Combat contre : {monster.displayName}</h1>
+            {/* Boss */}
+            <div className="boss-section">
+                <h1>Combat contre : {boss.displayName}</h1>
                 <div className="health-bar">
                     <div
                         className="health-fill"
-                        style={{ width: `${Math.max(0, (monster.stats.hp / monsters['dragon'].stats.hp) * 100)}%` }}
+                        style={{ width: `${Math.max(0, (boss.stats.hp / boss.stats.maxHp) * 100)}%` }}
                     ></div>
                     <span className="health-text">
-                        HP: {Math.max(0, monster.stats.hp)} / {monsters['dragon'].stats.hp}
+                        HP: {Math.max(0, boss.stats.hp)} / {boss.stats.maxHp}
                     </span>
                 </div>
             </div>
@@ -245,10 +249,10 @@ const BattlePage = () => {
                     </div>
                 )}
 
-                {gameState === 'MONSTER_TURN' && (
-                    <div className="monster-turn-indicator">
-                        <h3>Tour du {monster.displayName}</h3>
-                        <p>Le monstre prépare son attaque...</p>
+                {gameState === 'BOSS_TURN' && (
+                    <div className="boss-turn-indicator">
+                        <h3>Tour du {boss.displayName}</h3>
+                        <p>Le boss prépare son attaque...</p>
                     </div>
                 )}
 
@@ -266,7 +270,7 @@ const BattlePage = () => {
                     <p>
                         <strong>Phase actuelle:</strong> {
                             gameState === 'HERO_TURN' ? `Tour de ${currentHero?.displayName || 'Héros'}` :
-                                gameState === 'MONSTER_TURN' ? `Tour du ${monster.displayName}` :
+                                gameState === 'BOSS_TURN' ? `Tour du ${boss.displayName}` :
                                     'Fin de combat'
                         }
                     </p>

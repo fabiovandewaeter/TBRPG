@@ -18,7 +18,7 @@ function reducer(state, action) {
             const newVillager = {
                 id: nextId,
                 displayName: `Villager ${state.villagers.length + state.villagers.length + 1}`,
-                stats: { hp: 100, maxHp: 100, attack: 500000, defense: 2 },
+                stats: { hp: 100, maxHp: 100, attack: 5, defense: 2 },
                 xp: {},
                 equipment: { mainHand: weapons.sword },
                 currentTask: null,
