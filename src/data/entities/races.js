@@ -11,4 +11,4 @@ export const races = {
         baseStats: { hp: 200, maxHp: 200, attack: 15, defense: 10 },
         baseActions: [],
     }
-}
+};

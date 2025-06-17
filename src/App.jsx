@@ -19,6 +19,7 @@ import BattlePage from './pages/BattlePage';
 import { TeamProvider } from './contexts/TeamContext';
 import { InventoryContext, InventoryProvider } from './contexts/IventoryContext';
 import InventoryPage from './pages/InventoryPage';
+import CraftingPage from './pages/CraftingPage';
 
 function SaveManager() {
   const { saveGame } = useSave();
@@ -84,6 +85,7 @@ function AppContent() {
                           <li><Link to="/combatTasks" className="nav-link">⚔️ Combat tasks</Link></li>
                           <li><Link to="/mineTasks" className="nav-link">⛏️ Miner tasks</Link></li>
                           <li><Link to="/farmingTasks" className="nav-link">🌱️ Farming tasks</Link></li>
+                          <li><Link to="/crafting" className="nav-link">🔨 Crafting</Link></li>
                           <li><Link to="/inventory" className="nav-link">📦 Inventory</Link></li>
                           <li><Link to="/stats" className="nav-link">📊 Stats</Link></li>
                           <li>
@@ -103,6 +105,7 @@ function AppContent() {
                         <Route path="/combatTasks" element={<CombatTasksPage />} />
                         <Route path="/mineTasks" element={<MiningTasksPage />} />
                         <Route path="/farmingTasks" element={<FarmingTasksPage />} />
+                        <Route path="/crafting" element={<CraftingPage />} />
                         <Route path="/inventory" element={<InventoryPage />} />
                         <Route path="/stats" element={<StatsPage />} />
 
