@@ -1,5 +1,6 @@
 export const attacks = {
     basic: {
+        id: "basic",
         displayName: "Basic",
         icon: "💥️",
         baseDamages: 10,

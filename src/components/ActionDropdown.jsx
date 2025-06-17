@@ -7,8 +7,12 @@ import { attacks } from '../data/attacks';
  * - props.onSelect(actionName) : callback quand on choisit
  */
 const ActionDropdown = ({ attacker, onSelect }) => {
-    const options = Object.entries(attacks).map(([key, atk]) => ({
+    /*const options = Object.entries(attacks).map(([key, atk]) => ({
         key,
+        label: `${atk.icon} ${atk.displayName}`
+    }));*/
+    const options = attacker.actions.map((atk) => ({
+        key: atk.id,
         label: `${atk.icon} ${atk.displayName}`
     }));
 

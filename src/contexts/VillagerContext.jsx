@@ -1,6 +1,8 @@
 import React, { createContext, useReducer, useCallback, useEffect } from 'react';
 import { weapons } from '../data/weapons';
 import { attacks } from '../data/attacks';
+import { races } from '../data/races';
+import { classes } from '../data/classes';
 
 export const VillagerContext = createContext();
 
@@ -18,8 +20,11 @@ function reducer(state, action) {
             const newVillager = {
                 id: nextId,
                 displayName: `Villager ${state.villagers.length + state.villagers.length + 1}`,
-                stats: { hp: 100, maxHp: 100, attack: 5, defense: 2 },
+                race: action.race,
+                class: action.class,
+                stats: { ...action.race.baseStats, ...action.class.baseStats },
                 xp: {},
+                actions: [attacks["basic"], ...action.race.baseActions, ...action.class.baseActions],
                 equipment: { mainHand: weapons.sword },
                 currentTask: null,
             };
@@ -155,7 +160,7 @@ export const VillagerProvider = ({ children, initialState }) => {
         }
     }, [initialState]);
 
-    const addVillager = useCallback(() => dispatch({ type: 'ADD_VILLAGER' }), []);
+    const addVillager = useCallback(() => dispatch({ type: 'ADD_VILLAGER', race: races["human"], class: classes["hunter"] }), []);
     const assignTask = useCallback((id, task) => dispatch({ type: 'ASSIGN_TASK', villagerId: id, taskName: task }), []);
     const unassignTask = useCallback((id, task) => dispatch({ type: 'UNASSIGN_TASK', villagerId: id }), []);
     const gainXp = useCallback((id, type, amt) => dispatch({ type: 'GAIN_XP', villagerId: id, taskType: type, amount: amt }), []);
