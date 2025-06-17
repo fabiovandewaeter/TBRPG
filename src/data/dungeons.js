@@ -1,3 +1,4 @@
+import { weapons } from "./weapons";
 import { zones } from "./zones";
 
 const ICON = "🏰";
@@ -7,12 +8,12 @@ export const getDungeonList = () => {
         {
             zone: zones["softgrass_field"],
             baseInterval: 1000,
-            loot: [],
+            loot: [weapons["sword"]],
         },
         {
             zone: zones["hollow_thicket"],
             baseInterval: 3000,
-            loot: [],
+            loot: [weapons["sword"]],
         }
     ];
 

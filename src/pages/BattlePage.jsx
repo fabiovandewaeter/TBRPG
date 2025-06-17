@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useCallback } from 'react';
+import { useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { VillagerContext } from '../contexts/VillagerContext';
 import { useTeam } from '../contexts/TeamContext';
 import ActionDropdown from '../components/ActionDropdown';
@@ -6,6 +6,7 @@ import AttackSystem from '../systems/attackSystem';
 import { useParams } from 'react-router-dom';
 import { getDungeonList } from '../data/dungeons';
 import { TaskManagerContext } from '../contexts/TaskManagerContext';
+import { InventoryContext } from '../contexts/IventoryContext';
 
 const BattlePage = () => {
     const { dungeonId } = useParams();
@@ -15,6 +16,7 @@ const BattlePage = () => {
     const teamMembers = villagers.filter(v => team.includes(v.id));
 
     const { unlockCombatTask } = useContext(TaskManagerContext);
+    const { addItem } = useContext(InventoryContext);
 
     // État du boss 
     const [boss, setBoss] = useState({
@@ -29,6 +31,9 @@ const BattlePage = () => {
     const [isAnimating, setIsAnimating] = useState(false);
     // Nouvel état pour éviter le flash
     const [isGameEnding, setIsGameEnding] = useState(false);
+
+    // Ref pour éviter de looter plusieurs fois
+    const hasLootedRef = useRef(false);
 
     // Obtenir les héros vivants
     const getAliveHeroes = useCallback(() => {
@@ -52,7 +57,6 @@ const BattlePage = () => {
         if (boss.stats.hp <= 0) {
             setIsGameEnding(true);
             setGameState('VICTORY');
-            unlockCombatTask(dungeonId);
             return true;
         }
         if (getAliveHeroes().length === 0) {
@@ -61,7 +65,7 @@ const BattlePage = () => {
             return true;
         }
         return false;
-    }, [boss.stats.hp, getAliveHeroes, isGameEnding, unlockCombatTask]);
+    }, [boss.stats.hp, getAliveHeroes, isGameEnding]);
 
     // Passer au héros suivant ou au monstre
     const nextTurn = useCallback(() => {
@@ -105,7 +109,6 @@ const BattlePage = () => {
             setIsGameEnding(true);
             setTimeout(() => {
                 setGameState('VICTORY');
-                unlockCombatTask(dungeonId);
                 setIsAnimating(false);
             }, 50);
             return;
@@ -116,7 +119,7 @@ const BattlePage = () => {
             setIsAnimating(false);
             nextTurn();
         }, 50);
-    }, [gameState, isAnimating, isGameEnding, getCurrentHero, boss, nextTurn, unlockCombatTask]);
+    }, [gameState, isAnimating, isGameEnding, getCurrentHero, boss, nextTurn]);
 
     // Gestion du tour du boss - VERSION AMÉLIORÉE
     useEffect(() => {
@@ -173,6 +176,15 @@ const BattlePage = () => {
             setCurrentHeroIndex(0);
         }
     }, [getAliveHeroes, currentHeroIndex, isGameEnding]);
+
+    // add loot and unlock combatTask if victory
+    useEffect(() => {
+        if (gameState === 'VICTORY' && !hasLootedRef.current) {
+            hasLootedRef.current = true;
+            unlockCombatTask(dungeonId);
+            dungeon.loot.map(item => (addItem(item)));
+        }
+    }, [gameState, dungeonId, unlockCombatTask, addItem]);
 
     // Écrans de fin
     if (gameState === 'VICTORY') {
