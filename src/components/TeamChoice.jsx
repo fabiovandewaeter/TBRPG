@@ -21,10 +21,14 @@ const TeamChoice = () => {
 
     return (
         <div>
-            <h2>🎯 Sélection de l'équipe</h2>
-            <select value="" onChange={handleChange} disabled={team.length >= 5 || availableOptions.length === 0}>
+            <h2>🎯 Team Selection</h2>
+            <select
+                value=""
+                onChange={handleChange}
+                disabled={team.length >= 5 || availableOptions.length === 0}
+            >
                 <option value="">
-                    {team.length >= 5 ? "Équipe complète" : "-- Ajouter un villageois --"}
+                    {team.length >= 5 ? "Team Full" : "-- Add a villager --"}
                 </option>
                 {availableOptions.map(v => (
                     <option key={v.id} value={v.id}>
@@ -38,8 +42,11 @@ const TeamChoice = () => {
                     {teamMembers.map(v => (
                         <li key={v.id}>
                             {v.displayName}
-                            <button onClick={() => toggleVillager(v.id)} style={{ marginLeft: '1em' }}>
-                                ❌ Retirer
+                            <button
+                                onClick={() => toggleVillager(v.id)}
+                                style={{ marginLeft: '1em' }}
+                            >
+                                ❌ Remove
                             </button>
                         </li>
                     ))}

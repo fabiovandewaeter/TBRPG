@@ -1,16 +1,4 @@
-import React from 'react';
-import { attacks } from '../data/attacks';
-
-/**
- * Dropdown pour choisir l’action (attaque) d’un villageois.
- * - props.attacker : villager { id, displayName, stats, equipment }
- * - props.onSelect(actionName) : callback quand on choisit
- */
 const ActionDropdown = ({ attacker, onSelect }) => {
-    /*const options = Object.entries(attacks).map(([key, atk]) => ({
-        key,
-        label: `${atk.icon} ${atk.displayName}`
-    }));*/
     const options = attacker.actions.map((atk) => ({
         key: atk.id,
         label: `${atk.icon} ${atk.displayName}`
@@ -24,9 +12,9 @@ const ActionDropdown = ({ attacker, onSelect }) => {
     return (
         <div style={{ margin: '1em 0' }}>
             <label>
-                {attacker.displayName} choisit :
+                {attacker.displayName} chooses:
                 <select defaultValue="" onChange={handleChange}>
-                    <option value="">-- Choisir action --</option>
+                    <option value="">-- Select action --</option>
                     {options.map(opt => (
                         <option key={opt.key} value={opt.key}>
                             {opt.label}

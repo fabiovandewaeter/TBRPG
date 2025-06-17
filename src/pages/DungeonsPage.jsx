@@ -19,21 +19,23 @@ const DungeonsPage = () => {
 
     return (
         <div>
-            <h1>Choisissez votre équipe ({TEAM_SIZE} max)</h1>
+            <h1>Choose your team ({TEAM_SIZE} max)</h1>
             <TeamChoice />
 
-            <h2>Sélectionnez un donjon</h2>
-            <p>Current: {selectedDungeon ? selectedDungeon : "no dungeon selected"}</p>
+            <h2>Select a dungeon</h2>
+            <p>Current: {selectedDungeon ? dungeons.find(d => d.id === selectedDungeon).displayName : "No dungeon selected"}</p>
             <div className="dungeon-buttons">
                 {dungeons.map(dungeon => (
-                    <button key={dungeon.id} onClick={() => setSelectedDungeon(dungeon.id)}>{dungeon.displayName}</button>
+                    <button key={dungeon.id} onClick={() => setSelectedDungeon(dungeon.id)}>
+                        {dungeon.displayName}
+                    </button>
                 ))}
             </div>
 
             <button disabled={team.length === 0} onClick={startBattle}>
-                Entrer en combat ({team.length})
+                Enter Battle ({team.length})
             </button>
-            <button onClick={clearTeam}>Réinitialiser</button>
+            <button onClick={clearTeam}>Reset</button>
         </div>
     );
 };

@@ -11,7 +11,7 @@ const InventoryPage = () => {
             {inventory.map(item => (
                 <div key={item.id}>
                     <span>{item.icon} {item.displayName}</span>
-                    <button onClick={() => removeItem(item.id)}>Jeter</button>
+                    <button onClick={() => removeItem(item.id)}>Drop</button>
                     <pre>{JSON.stringify(item.stats)}</pre>
                 </div>
             ))}
