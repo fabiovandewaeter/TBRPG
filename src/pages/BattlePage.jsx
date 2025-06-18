@@ -6,7 +6,7 @@ import AttackSystem from '../systems/attackSystem';
 import { useParams } from 'react-router-dom';
 import { getDungeonList } from '../data/dungeons';
 import { TaskManagerContext } from '../contexts/TaskManagerContext';
-import { InventoryContext } from '../contexts/IventoryContext';
+import { InventoryContext } from '../contexts/InventoryContext';
 
 const BattlePage = () => {
     const { dungeonId } = useParams();

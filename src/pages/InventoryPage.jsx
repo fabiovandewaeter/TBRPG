@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { InventoryContext } from '../contexts/IventoryContext';
+import { InventoryContext } from '../contexts/InventoryContext';
 
 const InventoryPage = () => {
 
