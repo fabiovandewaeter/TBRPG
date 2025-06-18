@@ -1,13 +1,13 @@
-import { craftingCategories } from "../data/crafts/craftingCategories";
+import { craftingCategories } from "../data/recipes/craftingCategories";
 
-const RecipeList = ({ category, craftList }) => {
+const RecipeList = ({ category, recipeList }) => {
 
     return (
         <div>
             <h2 className="text-xl font-semibold mb-2">{craftingCategories[category]}</h2>
             <ul>
-                {Object.entries(craftList).map(craft => (
-                    <li key={craft[0]}>{craft[1].displayName}</li>
+                {Object.entries(recipeList).map(recipe => (
+                    <li key={recipe[0]}>{recipe[1].displayName}</li>
                 ))}
             </ul>
         </div>
